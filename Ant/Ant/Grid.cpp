@@ -25,8 +25,8 @@ void GridManager::makeZones() {
 		std::vector<PointSquare> squaresColumn;
 		for (double j = 0; j < sandboxHeight; j += squareHeight) {
 			// Insert into the squarePoints map the ID for the square (incrementing by two) as well as the points in the following order: top left, top right, bottom left, bottom right.
-			squaresColumn.push_back(PointSquare(ID, Vector(i, j, getDepth(i, j)), Vector(i + sandboxWidth, j, getDepth(i + sandboxWidth, j)),
-				Vector(i, j + sandboxHeight, getDepth(i, j + sandboxHeight)), Vector(i + sandboxWidth, j + sandboxHeight, getDepth(i + sandboxWidth, j + sandboxHeight))));
+			squaresColumn.push_back(PointSquare(ID, Vector(i, j, getDepth(i, j)), Vector(i + squareWidth, j, getDepth(i + squareWidth, j)),
+				Vector(i, j + squareHeight, getDepth(i, j + squareHeight)), Vector(i + squareWidth, j + squareHeight, getDepth(i + squareWidth, j + squareHeight))));
 			ID += 2; // Increment ID by two each time as each square will be divided into two triangles.
 		}
 		squaresArray.push_back(squaresColumn);

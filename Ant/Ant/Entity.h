@@ -2,42 +2,41 @@
 #include "stdafx.h"
 #include <vector>
 #include "Geometry.h"
+#include <memory>
 #include <map>
 #include "Grid.h"
+#include "SFML\Graphics.hpp"
 
-namespace sf {
-	class Texture;
-	class Clock;
-}
 class Agent;
 class Affordance;
 enum AgentType;
 
 class VisualObject {
 private:
-	static int IDGenerator;
-	sf::Texture* texture;
+	std::unique_ptr<sf::Texture> texture;
 	Vector position;
 	std::vector<const VisualObject*> neighbourList;
 public:
-	VisualObject() : ID(0){};
+	VisualObject(std::string& texturePath, Vector initialPosition);
+	VisualObject() : ID(5){};
 	Box getBoundingBox() const {};
+	static int IDGenerator;
 	const int ID;
 };
 
 class Steppable : public VisualObject {
 private:
-	sf::Clock* stepClock;
+	sf::Clock stepClock;
 public:
-	Steppable(){};
+	Steppable(std::string& texturePath, Vector initialPosition);
 	virtual void step() {};
 };
 
 class AgentManager : Steppable {
 private:
-	std::map<int, Agent*> agentList;
+	std::vector<std::shared_ptr<Agent>> x;
+	GridManager& gridManager;
+	std::multimap<int, std::shared_ptr<Agent>> agentList;
 	void updateNeighbours();
-	std::vector<Affordance*> getAffordances(Agent* target) const;
-	//void addAgent(int face, AgentType typeToAdd);
 	void step();
 };

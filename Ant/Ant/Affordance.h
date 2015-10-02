@@ -1,9 +1,10 @@
 #pragma once
 #include "stdafx.h"
+#include <memory>
 #include <vector>
 
 
-class AgentState;
+struct AgentState;
 
 enum AffordanceType {
 	damage
@@ -12,7 +13,7 @@ enum AffordanceType {
 class Affordance {
 protected:
 	AgentState* holderState;
-	virtual void operator()(std::vector<void*> args = std::vector<void*>());
+	virtual void operator()(std::vector<void*> args = std::vector<void*>()) = 0;
 	Affordance(AgentState* holderState) : holderState(holderState) {};
 public:
 	AffordanceType type;
@@ -28,10 +29,10 @@ private:
 	};
 
 public:
-	Affordance make(AgentState* holderState, AffordanceType type) {
+	std::unique_ptr<Affordance> make(AgentState* holderState, AffordanceType type) {
 		switch (type) {
 		case damage:
-			return Damage(holderState);
+			return std::unique_ptr<Affordance>(new Damage(holderState));
 		}
 	}
 
