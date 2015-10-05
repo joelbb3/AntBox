@@ -17,10 +17,55 @@ double GridManager::getDepth(double x, double y) {
 }
 
 void GridManager::makeZones() {
+    // Set up.
 	int ID = 0;
-	std::vector<std::vector<PointSquare>> squaresArray;
+    std::vector<std::vector<std::shared_ptr<Vertex>>> vertexArray;
+    std::vector<std::vector<std::shared_ptr<SquareFace>>> squareArray;
 	double squareWidth = sandboxWidth / squaresPerRow;
 	double squareHeight = sandboxHeight / squaresPerColumn;
+    
+    // Fill the vertex array.
+    for (double i = 0; i < sandboxWidth; i += squareWidth) {
+        std::vector<std::shared_ptr<Vertex>> vertexColumn;
+        for (double j = 0; j < sandboxHeight; j += squareHeight) {
+            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(Vector(i, j, getDepth(i, j)))));
+        }
+        vertexArray.push_back(vertexColumn);
+    }
+    
+    // Fill the square array.
+    for (int i = 0; i < vertexArray.size() - 1; ++i){
+        std::vector<std::shared_ptr<SquareFace>> squareColumn;
+        for (int j = 0; j < vertexArray[i].size() - 1; ++j){
+            squareColumn.push_back(std::shared_ptr<SquareFace>(new SquareFace(ID, vertexArray[i][j], vertexArray[i+1][j], vertexArray[i][j+1], vertexArray[i+1][j+1])));
+        }
+        squareArray.push_back(squareColumn);
+    }
+    
+    // Link squares.
+    for (int i = 0; i < squareArray.size(); ++i){
+        for (int j = 0; j < squareArray[i].size(); ++j){
+            if(i > 0){
+                squareArray[i][j]->left = squareArray[i-1][j];
+            }
+            if(i < squareArray.size() - 1){
+                squareArray[i][j]->right = squareArray[i+1][j];
+            }
+            if(j > 0){
+                squareArray[i][j]->up = squareArray[i][j-1];
+            }
+            if(j < squareArray[i].size()-1){
+                squareArray[i][j]->down = squareArray[i][j+1];
+            }
+        }
+    }
+    
+    // Associate vertices with faces.
+    int 
+    squareArray[0][0].topLeft->associate(*squareArray[0][0].top->get());
+    squareArray[squareArray.size()-1][squareArr]
+    
+    
 	for (double i = 0; i < sandboxWidth; i += squareWidth) {
 		std::vector<PointSquare> squaresColumn;
 		for (double j = 0; j < sandboxHeight; j += squareHeight) {
