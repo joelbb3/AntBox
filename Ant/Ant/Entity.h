@@ -13,30 +13,49 @@ enum AgentType;
 
 class VisualObject {
 private:
+    Vector position;
 	std::unique_ptr<sf::Texture> texture;
-	Vector position;
-	std::vector<const VisualObject*> neighbourList;
+    std::unique_ptr<sf::Sprite> sprite;
+    
 public:
+    static int IDGenerator;
+    const int ID;
+    
 	VisualObject(std::string& texturePath, Vector initialPosition);
-	VisualObject() : ID(5){};
-	Box getBoundingBox() const {};
-	static int IDGenerator;
-	const int ID;
+    VisualObject();
+    
+	Box getBoundingBox() const;
 };
+
+
 
 class Steppable : public VisualObject {
 private:
 	sf::Clock stepClock;
+    
 public:
 	Steppable(std::string& texturePath, Vector initialPosition);
-	virtual void step() {};
+    
+	virtual void step(){};
 };
+
+
 
 class AgentManager : Steppable {
 private:
-	std::vector<std::shared_ptr<Agent>> x;
-	GridManager& gridManager;
-	std::multimap<int, std::shared_ptr<Agent>> agentList;
+    enum AgentManagerFlags{
+        kill,
+        moved
+    };
+    
+    GridManager& gridManager;
+    Vector defaultPosition;
+    std::multimap<int, std::shared_ptr<Agent>> agentList; // Each agent is keyed by the ID# of the face they occupy.
+    
+    AgentManager(GridManager& gridManager, Vector defaultPosition);
+    
+    bool isColliding(const Agent& a1, const Agent& a2);
+    void createAgent(Vector position);
 	void updateNeighbours();
 	void step();
 };

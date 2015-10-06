@@ -5,6 +5,7 @@
 #include <exception>
 #include <string>
 #include "Grid.h"
+#include "Geometry.h"
 
 /* SquareFace */
 
@@ -18,8 +19,8 @@ top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::vector<std::vector<
 
 /* TriangleFace */
 
-TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList){
-}
+TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList), normal(cross(one - two, one - three)){
+};
 
 
 /* Vertex */
@@ -31,39 +32,85 @@ void Vertex::associate(std::shared_ptr<TriangleFace> face){
     associatedFaces.push_back(std::weak_ptr<TriangleFace>(face));
 }
 
+void Vertex::calculateNormal(){
+    int numFaces = associatedFaces.size();
+    Vector n(0,0,0);
+    for(auto x : associatedFaces){
+        n += x.lock()->normal;
+    }
+    normal = n / numFaces;
+}
+                                                                                                                                                                                                                                                        
+
 
 
 /* GridManager */
 
+int locatePoint(Vector& vec){
+    double squareWidth = sandboxWidth / squaresPerRow;
+    double squareHeight = sandboxHeight / squaresPerColumn;
+    int predictedRow = static_cast<int>(vec.x / squareWidth);
+    int predictedColumn = static_cast<int>(vec.y / squareHeight);
+    int predictedSquareID = (predictedColumn * squaresPerRow) + predictedRow;
+    int predictedTriangleID = predictedSquareID * 2;
+    if (faceArray[predictedTriangleID]->contains(vec)) {
+        return predictedTriangleID;
+    } else {
+        for (int i = 0; i < faceArray[predictedTriangleID]->neighbourList.size(); ++i) {
+            for (auto x : faceArray[predictedTriangleID]->neighbourList[i]) {
+                if (faceArray[x]->contains(vec)) {
+                    return i;
+                }
+            }
+        }
+    }
+    return false;
+
+}
+
+std::vector<int> getBarycentricCoordinates(int faceID, Vector& vec){
+    TriangleFace& triangle = *faceArray[faceID];
+    Vector f1 = vec - *triangle.pointOne;
+    Vector f2 = vec - *triangle.pointTwo;
+    Vector f3 = vec - *triangle.pointThree;
+    double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree);
+    double a = cross(f2, f3).magnitude();
+    double b = cross(f1, f3).magnitude();
+    double c = cross(f1, f2).magnitude();
+    return std::vector<int>{a, b, c};
+}
+
 double GridManager::absoluteInterpolateHeight(Vector& xyVec) {
-	double squareWidth = sandboxWidth / squaresPerRow;
-	double squareHeight = sandboxHeight / squaresPerColumn;
-	int predictedRow = static_cast<int>(xyVec.x / squareWidth);
-	int predictedColumn = static_cast<int>(xyVec.y / squareHeight);
-	int predictedSquareID = (predictedColumn * squaresPerRow) + predictedRow;
-	int predictedTriangleID = predictedSquareID * 2;
-	if (faceArray[predictedTriangleID]->contains(xyVec)) {
-		return interpolateHeight(predictedTriangleID, xyVec);
-	}
-	else {
-		for (int i = 0; i < faceArray[predictedTriangleID]->neighbourList.size(); ++i) {
-			for (auto x : faceArray[predictedTriangleID]->neighbourList[i]) {
-				if (faceArray[x]->contains(xyVec)) {
-					return interpolateHeight(x, xyVec);
-				}
-			}
-		}
-	}
-	return false;
+    int faceID = locatePoint(xyVec);
+    return interpolateHeight(faceID, xyVec);
 }
 
 double GridManager::interpolateHeight(int faceID, Vector& xyVec) {
-	TriangleFace& triangle = *faceArray[faceID];
-	Vector f1 = xyVec - *triangle.pointOne;
-	Vector f2 = xyVec - *triangle.pointTwo;
-	Vector f3 = xyVec - *triangle.pointThree;
-	double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree);
+    std::vector<int> baryCoord = getBarycentricCoordinates(faceID, xyVec);
+    xyVec.z = (baryCoord[0] * triangle->pointOne.z) + (baryCoord[1] * triangle->pointTwo.z) + (baryCoord[2] * triangle->pointThree.z);
+    return xyVec.z;
 }
+
+double GridManager::absoluteInterpolateNormal(Vector& vec){
+    int faceID = locatePoint(vec);
+    return interpolateNormal(vec);
+}
+
+double GridManager::interpolateNormal(int faceID, Vector& vec){
+    std::vector<int> baryCoord = getBarycentricCoordinates(faceID, xyVec);
+    return (baryCoord[0] * triangle->pointOne.normal) + (baryCoord[1] * triangle->pointTwo.normal) + (baryCoord[2] * triangle->pointThree.normal);
+}
+
+std::vector<int> GridManager::getNeighbours(int faceID,int radius){
+    std::vector<int> neighbourList;
+    for(int i = 0; i < radius; ++i){
+        for(auto x : faceArray[faceID]->neighbourList[i]){
+            neighbourList.push_back(x);
+        }
+    }
+    return neighbourList;
+}
+
 
 
 void GridManager::makeZones() {
@@ -178,7 +225,7 @@ void GridManager::makeZones() {
 			// Neighbours will be stored in a map where an integer k keys a list containing ID's for all squares within a radius of k (note here that 'radius' approximates boxes as circles; ie.
 			// a 'radius' of one from some square S encompasses all squares within the box immediately surrounding S; a 'radius'of two encompasses the box immediately surrounding *that* box, etc.
 			std::vector<std::vector<int>> neighboursList;
-			for (int k = 1; k < std::max(squareArray.size(), squareArray[i].size()); ++k) {
+			for (int k = 1; k <= maxNeighbourRadius; ++k) {
 				std::vector<int> neighboursAtRadiusK;
 				for (int l = 0; l <= k * 2; ++l) { // Note that k gives the boundary of the neighbourhood region; l traverses the region.
 					// Top row in the box at radius k.

@@ -13,6 +13,7 @@ public:
 	std::shared_ptr<Vertex> pointOne;
 	std::shared_ptr<Vertex> pointTwo;
 	std::shared_ptr<Vertex> pointThree;
+    Vector normal;
 	std::vector<std::vector<int>> neighbourList;
 	bool contains(Vector& xyVec);
 	const int ID;
@@ -25,7 +26,9 @@ class Vertex : public Vector{
     std::vector<std::weak_ptr<TriangleFace>> associatedFaces;
 public:
     Vertex(int ID, Vector position);
+    Vector normal;
 	void associate(std::shared_ptr<TriangleFace> face);
+    void calculateNormal();
 };
 
 
@@ -51,6 +54,7 @@ public:
 
 
 class GridManager {
+    int maxNeighbourRadius = 5; // Critical for performance.
 	int squaresPerRow;
 	int squaresPerColumn;
 	std::vector<std::shared_ptr<TriangleFace>> faceArray;
@@ -59,6 +63,9 @@ class GridManager {
 	double getDepth(double x, double y);
 	void makeZones();
 public:
+    int locatePoint(Vector& vec);
+    std::vector<int> getBarycentricCoordinates(Vector& vec);
+    std::vector<int> getNeighbours(int radius);
 	double absoluteInterpolateHeight(Vector& xyVec); // Z-coordinate is modified in-place.
 	double interpolateHeight(int faceID, Vector& xyVec);
 	static std::vector<int> getNeighbours(int ID) { return std::vector<int>{}; };
