@@ -5,26 +5,27 @@
 #include <memory>
 #include "Geometry.h"
 
-
+class Vertex;
 
 class TriangleFace {
-	int ID;
-	Vector pointOne;
-	Vector pointTwo;
-	Vector pointThree;
-	std::map<int, std::vector<int>> neighbourList;
+	friend class GridManager;
 public:
-	TriangleFace(int ID, Vector one, Vector two, Vector three, std::map<int, std::vector<int>> neighbourList);
-	void updateNeighbours(int distance, std::vector<int> neighbourIDs);
+	std::shared_ptr<Vertex> pointOne;
+	std::shared_ptr<Vertex> pointTwo;
+	std::shared_ptr<Vertex> pointThree;
+	std::vector<std::vector<int>> neighbourList;
+	bool contains(Vector& xyVec);
+	const int ID;
+	TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList);
 };
 
 
-class Vertex : Vector{
+class Vertex : public Vector{
     int ID;
     std::vector<std::weak_ptr<TriangleFace>> associatedFaces;
 public:
     Vertex(int ID, Vector position);
-	void associate(TriangleFace& face);
+	void associate(std::shared_ptr<TriangleFace> face);
 };
 
 
@@ -42,9 +43,9 @@ public:
     std::weak_ptr<const SquareFace> up;
     std::weak_ptr<const SquareFace> down;
     // Pointers to the two triangles encompassing the square.
-    const std::shared_ptr<TriangleFace> top;
-	const std::shared_ptr<TriangleFace> bottom;
-	std::map<int, std::vector<int>> neighboursList;
+    std::shared_ptr<TriangleFace> top;
+	std::shared_ptr<TriangleFace> bottom;
+	std::vector<std::vector<int>> neighbourList;
     SquareFace(int ID, std::shared_ptr<Vertex> topLeft, std::shared_ptr<Vertex> topRight, std::shared_ptr<Vertex> bottomLeft, std::shared_ptr<Vertex> bottomRight);
 };
 
@@ -58,6 +59,8 @@ class GridManager {
 	double getDepth(double x, double y);
 	void makeZones();
 public:
+	double absoluteInterpolateHeight(Vector& xyVec); // Z-coordinate is modified in-place.
+	double interpolateHeight(int faceID, Vector& xyVec);
 	static std::vector<int> getNeighbours(int ID) { return std::vector<int>{}; };
 };
 

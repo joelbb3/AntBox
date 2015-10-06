@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include <algorithm>
+#include <set>
 #include <utility>
-#include <except>
+#include <exception>
 #include <string>
 #include "Grid.h"
 
@@ -10,60 +11,60 @@
 SquareFace::SquareFace(int ID, std::shared_ptr<Vertex> topLeft, std::shared_ptr<Vertex> topRight, std::shared_ptr<Vertex> bottomLeft, std::shared_ptr<Vertex> bottomRight):
 ID(ID), topLeft(topLeft), topRight(topRight),
 bottomLeft(bottomLeft), bottomRight(bottomRight),
-top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::map<int, std::vector<int>>{})), bottom(ID + 1, bottomLeft, bottomRight, topRight, std::map<int, std::vector<int>>){
+top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::vector<std::vector<int>>{})), bottom(new TriangleFace(ID + 1, bottomLeft, bottomRight, topRight, std::vector<std::vector<int>>{})) {
 };
 
 
 
 /* TriangleFace */
 
-TriangleFace::TriangleFace(int ID, Vector one, Vector two, Vector three, std::map<int, std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList){
-}
-
-void TriangleFace::updateNeighbours(int distance, std::vector<int> neighbourIDs) {
-    if (!neighbourList.count(distance)) {
-        neighbourList.insert(std::make_pair(distance, neighbourIDs));
-    }
-    else {
-        neighbourList[distance] = neighbourIDs;
-    }
+TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList){
 }
 
 
 /* Vertex */
 
-Vertex(int ID, Vector position) : ID(ID), Vector(position){
+Vertex::Vertex(int ID, Vector position) : ID(ID), Vector(position){
 };
 
 void Vertex::associate(std::shared_ptr<TriangleFace> face){
-    // A given face should not be associated twice with the same vertex.
-    int newFaceID = face->ID;
-    for(auto face : associatedFaces){
-        if(face->ID == newFaceID){
-            throw std::logic_error("Error: Vertex #" + std::to_string(ID) + " already associated with TriangleFace #" + std::to_string(face->ID));
-        }
-    }
-    associatedFaces.push_back(std::weak_ptr(face);
+    associatedFaces.push_back(std::weak_ptr<TriangleFace>(face));
 }
 
 
 
 /* GridManager */
 
-
-
-bool indexInArray(int arrayWidth, int arrayHeight, int i, int j) {
-	if (i < arrayWidth && i >= 0 && j < arrayHeight && j >= 0) {
-		return true;
+double GridManager::absoluteInterpolateHeight(Vector& xyVec) {
+	double squareWidth = sandboxWidth / squaresPerRow;
+	double squareHeight = sandboxHeight / squaresPerColumn;
+	int predictedRow = static_cast<int>(xyVec.x / squareWidth);
+	int predictedColumn = static_cast<int>(xyVec.y / squareHeight);
+	int predictedSquareID = (predictedColumn * squaresPerRow) + predictedRow;
+	int predictedTriangleID = predictedSquareID * 2;
+	if (faceArray[predictedTriangleID]->contains(xyVec)) {
+		return interpolateHeight(predictedTriangleID, xyVec);
 	}
 	else {
-		return false;
+		for (int i = 0; i < faceArray[predictedTriangleID]->neighbourList.size(); ++i) {
+			for (auto x : faceArray[predictedTriangleID]->neighbourList[i]) {
+				if (faceArray[x]->contains(xyVec)) {
+					return interpolateHeight(x, xyVec);
+				}
+			}
+		}
 	}
-};
-
-double GridManager::getDepth(double x, double y) {
-	return 5.0;
+	return false;
 }
+
+double GridManager::interpolateHeight(int faceID, Vector& xyVec) {
+	TriangleFace& triangle = *faceArray[faceID];
+	Vector f1 = xyVec - *triangle.pointOne;
+	Vector f2 = xyVec - *triangle.pointTwo;
+	Vector f3 = xyVec - *triangle.pointThree;
+	double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree);
+}
+
 
 void GridManager::makeZones() {
     // Set up.
@@ -77,7 +78,7 @@ void GridManager::makeZones() {
     for (double i = 0; i < sandboxWidth; i += squareWidth) {
         std::vector<std::shared_ptr<Vertex>> vertexColumn;
         for (double j = 0; j < sandboxHeight; j += squareHeight) {
-            vertexColumn.push_back(std::shared_ptr<Vertex>(ID++, new Vertex(Vector(i, j, getDepth(i, j)))));
+            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(ID++, Vector(i, j, getDepth(i, j)))));
         }
         vertexArray.push_back(vertexColumn);
     }
@@ -176,7 +177,7 @@ void GridManager::makeZones() {
 		for (int j = 0; j < squareArray[i].size(); ++j) {
 			// Neighbours will be stored in a map where an integer k keys a list containing ID's for all squares within a radius of k (note here that 'radius' approximates boxes as circles; ie.
 			// a 'radius' of one from some square S encompasses all squares within the box immediately surrounding S; a 'radius'of two encompasses the box immediately surrounding *that* box, etc.
-			std::map<int, std::vector<int>> neighboursList;
+			std::vector<std::vector<int>> neighboursList;
 			for (int k = 1; k < std::max(squareArray.size(), squareArray[i].size()); ++k) {
 				std::vector<int> neighboursAtRadiusK;
 				for (int l = 0; l <= k * 2; ++l) { // Note that k gives the boundary of the neighbourhood region; l traverses the region.
@@ -201,8 +202,9 @@ void GridManager::makeZones() {
 						neighboursAtRadiusK.push_back(squareArray[i + k][j + k - l]->ID + 1);
 					}
 				}
-				neighboursList.insert(std::make_pair(k, neighboursAtRadiusK));
+				neighboursList.push_back(neighboursAtRadiusK);
 			}
+			squareArray[i][j]->neighbourList = neighboursList;
 		}
 	}
 
@@ -210,9 +212,9 @@ void GridManager::makeZones() {
 	for (auto& squareColumn : squareArray) {
 		for (auto& square : squareColumn) {
 			// Use the neighbour list in each square to pass neighbours to contained triangles.
-			for (auto it = square->neighboursList.begin(); it != square->neighboursList.end(); ++it) {
-				square->top->updateNeighbours(it->first, it->second);
-				square->bottom->updateNeighbours(it->first, it->second);
+			for (auto& x : square->neighbourList) {
+				square->top->neighbourList.push_back(x);
+				square->bottom->neighbourList.push_back(x);
 			}
 			// Finally, add to the face array.
 			faceArray.push_back(std::shared_ptr<TriangleFace>(square->top));
@@ -222,5 +224,15 @@ void GridManager::makeZones() {
 };
 
 
+bool indexInArray(int arrayWidth, int arrayHeight, int i, int j) {
+	if (i < arrayWidth && i >= 0 && j < arrayHeight && j >= 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
 
-
+double GridManager::getDepth(double x, double y) {
+	return 5.0;
+}
