@@ -1,42 +1,33 @@
 #pragma once
-#include "stdafx.h"
 #include <vector>
-#include "Geometry.h"
 #include <memory>
 #include <map>
-#include "Grid.h"
-#include "SFML\Graphics.hpp"
-
-class Agent;
-class Affordance;
-enum AgentType;
+#include <string>
+#include "Geometry.h"
+#include "stdafx.h"
 
 class VisualObject {
-private:
-	std::unique_ptr<sf::Texture> texture;
-	Vector position;
-	std::vector<const VisualObject*> neighbourList;
 public:
-	VisualObject(std::string& texturePath, Vector initialPosition);
-	VisualObject() : ID(5){};
-	Box getBoundingBox() const {};
-	static int IDGenerator;
-	const int ID;
+    Vector position;
+    static int IDGenerator;
+    const int ID;
+    
+    VisualObject(std::string& texturePath, Vector initialPosition);
+    VisualObject();
+    
+	Box getBoundingBox() const { return Box(Vector(0, 0, 0), 0, 0); };
 };
+
+
 
 class Steppable : public VisualObject {
 private:
-	sf::Clock stepClock;
+    //sf::Clock stepClock;
+    
 public:
-	Steppable(std::string& texturePath, Vector initialPosition);
-	virtual void step() {};
+    Steppable(std::string texturePath, Vector initialPosition);
+    
+    virtual void step(){};
 };
 
-class AgentManager : Steppable {
-private:
-	std::vector<std::shared_ptr<Agent>> x;
-	GridManager& gridManager;
-	std::multimap<int, std::shared_ptr<Agent>> agentList;
-	void updateNeighbours();
-	void step();
-};
+
