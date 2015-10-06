@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "Geometry.h"
+#include "stdafx.h"
 
 class GridManager;
 
@@ -19,7 +20,7 @@ public:
     VisualObject(std::string& texturePath, Vector initialPosition);
     VisualObject();
     
-    Box getBoundingBox() const{};
+	Box getBoundingBox() const { return Box(Vector(0, 0, 0), 0, 0); };
 };
 
 

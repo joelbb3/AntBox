@@ -6,6 +6,7 @@
 #include <set>
 #include "Entity.h"
 #include "Affordance.h"
+#include "stdafx.h"
 
 class Vector; // three dimensional Vector from Geometry.h
 class Affordance;
@@ -41,5 +42,5 @@ public:
 
 class AgentFactory{
 public:
-    static std::shared_ptr<Agent> make(std::string type){};
+	static std::shared_ptr<Agent> make(std::string type) { return std::shared_ptr<Agent>{}; };
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include "stdafx.h"
 
 
 struct AgentState;

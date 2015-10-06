@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 #include <map>
 #include <vector>
 #include <memory>
@@ -14,7 +15,7 @@ public:
     std::shared_ptr<Vertex> pointThree;
     Vector normal;
     std::vector<std::vector<int>> neighbourList;
-    bool contains(Vector& xyVec){};
+	bool contains(Vector& xyVec) { return true; };
     const int ID;
     TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList);
 };
