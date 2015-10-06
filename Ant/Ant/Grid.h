@@ -1,13 +1,11 @@
 #pragma once
 #include "stdafx.h"
+#include <map>
 #include <vector>
 #include <memory>
 #include "Geometry.h"
-#include <map>
 
 
-
-bool indexInArray(int arrayWidth, int arrayHeight, int i, int j);
 
 class TriangleFace {
 	int ID;
@@ -16,17 +14,19 @@ class TriangleFace {
 	Vector pointThree;
 	std::map<int, std::vector<int>> neighbourList;
 public:
-	TriangleFace(int ID, Vector one, Vector two, Vector three, std::map<int, std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList) {};
+	TriangleFace(int ID, Vector one, Vector two, Vector three, std::map<int, std::vector<int>> neighbourList);
 	void updateNeighbours(int distance, std::vector<int> neighbourIDs);
-	void setID(int x) { ID = x; };
 };
 
+
 class Vertex : Vector{
+    int ID;
     std::vector<std::weak_ptr<TriangleFace>> associatedFaces;
 public:
-    Vertex(Vector position) : Vector(position){};
-	void associate(TriangleFace& face) {};
+    Vertex(int ID, Vector position);
+	void associate(TriangleFace& face);
 };
+
 
 class SquareFace {
 public:
@@ -45,14 +45,9 @@ public:
     const std::shared_ptr<TriangleFace> top;
 	const std::shared_ptr<TriangleFace> bottom;
 	std::map<int, std::vector<int>> neighboursList;
-    SquareFace(int ID, std::shared_ptr<Vertex> topLeft, std::shared_ptr<Vertex> topRight, std::shared_ptr<Vertex> bottomLeft, std::shared_ptr<Vertex> bottomRight):
-        ID(ID), topLeft(topLeft), topRight(topRight),
-        bottomLeft(bottomLeft), bottomRight(bottomRight)
-    {
-        split();
-    }
-	void split() {};
+    SquareFace(int ID, std::shared_ptr<Vertex> topLeft, std::shared_ptr<Vertex> topRight, std::shared_ptr<Vertex> bottomLeft, std::shared_ptr<Vertex> bottomRight);
 };
+
 
 class GridManager {
 	int squaresPerRow;
@@ -65,4 +60,7 @@ class GridManager {
 public:
 	static std::vector<int> getNeighbours(int ID) { return std::vector<int>{}; };
 };
+
+
+bool indexInArray(int arrayWidth, int arrayHeight, int i, int j);
 

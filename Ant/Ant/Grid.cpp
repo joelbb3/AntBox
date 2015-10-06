@@ -1,7 +1,56 @@
 #include "stdafx.h"
-#include "Grid.h"
 #include <algorithm>
 #include <utility>
+#include <except>
+#include <string>
+#include "Grid.h"
+
+/* SquareFace */
+
+SquareFace::SquareFace(int ID, std::shared_ptr<Vertex> topLeft, std::shared_ptr<Vertex> topRight, std::shared_ptr<Vertex> bottomLeft, std::shared_ptr<Vertex> bottomRight):
+ID(ID), topLeft(topLeft), topRight(topRight),
+bottomLeft(bottomLeft), bottomRight(bottomRight),
+top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::map<int, std::vector<int>>{})), bottom(ID + 1, bottomLeft, bottomRight, topRight, std::map<int, std::vector<int>>){
+};
+
+
+
+/* TriangleFace */
+
+TriangleFace::TriangleFace(int ID, Vector one, Vector two, Vector three, std::map<int, std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList){
+}
+
+void TriangleFace::updateNeighbours(int distance, std::vector<int> neighbourIDs) {
+    if (!neighbourList.count(distance)) {
+        neighbourList.insert(std::make_pair(distance, neighbourIDs));
+    }
+    else {
+        neighbourList[distance] = neighbourIDs;
+    }
+}
+
+
+/* Vertex */
+
+Vertex(int ID, Vector position) : ID(ID), Vector(position){
+};
+
+void Vertex::associate(std::shared_ptr<TriangleFace> face){
+    // A given face should not be associated twice with the same vertex.
+    int newFaceID = face->ID;
+    for(auto face : associatedFaces){
+        if(face->ID == newFaceID){
+            throw std::logic_error("Error: Vertex #" + std::to_string(ID) + " already associated with TriangleFace #" + std::to_string(face->ID));
+        }
+    }
+    associatedFaces.push_back(std::weak_ptr(face);
+}
+
+
+
+/* GridManager */
+
+
 
 bool indexInArray(int arrayWidth, int arrayHeight, int i, int j) {
 	if (i < arrayWidth && i >= 0 && j < arrayHeight && j >= 0) {
@@ -28,12 +77,13 @@ void GridManager::makeZones() {
     for (double i = 0; i < sandboxWidth; i += squareWidth) {
         std::vector<std::shared_ptr<Vertex>> vertexColumn;
         for (double j = 0; j < sandboxHeight; j += squareHeight) {
-            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(Vector(i, j, getDepth(i, j)))));
+            vertexColumn.push_back(std::shared_ptr<Vertex>(ID++, new Vertex(Vector(i, j, getDepth(i, j)))));
         }
         vertexArray.push_back(vertexColumn);
     }
     
     // Fill the square array.
+    ID = 0;
     for (int i = 0; i < vertexArray.size() - 1; ++i){
         std::vector<std::shared_ptr<SquareFace>> squareColumn;
         for (int j = 0; j < vertexArray[i].size() - 1; ++j){
@@ -69,54 +119,54 @@ void GridManager::makeZones() {
 			// We move from left to right across each row, associating the left-hand (top-left and bottom-left) vertices appropriately:
 
 			// Every vertex is associated with the faces in its own square.
-			square.topLeft->associate(*square.top.get());
-			square.bottomLeft->associate(*square.top.get());
-			square.bottomLeft->associate(*square.bottom.get());
+			square.topLeft->associate(square.top);
+			square.bottomLeft->associate(square.top);
+			square.bottomLeft->associate(square.bottom);
 
 			// If there is a square to the left.
 			if (i > 0) {
-				square.topLeft->associate(*square.left.lock()->top.get());
-				square.topLeft->associate(*square.left.lock()->bottom.get());
-				square.bottomLeft->associate(*square.left.lock()->top.get());
+				square.topLeft->associate(square.left.lock()->top);
+				square.topLeft->associate(square.left.lock()->bottom);
+				square.bottomLeft->associate(square.left.lock()->top);
 			}
 			// If there is a square above.
 			if (j > 0) {
-				square.topLeft->associate(*square.up.lock()->top.get());
-				square.topLeft->associate(*square.up.lock()->bottom.get());
-				square.topRight->associate(*square.up.lock()->bottom.get());
+				square.topLeft->associate(square.up.lock()->top);
+				square.topLeft->associate(square.up.lock()->bottom);
+				square.topRight->associate(square.up.lock()->bottom);
 			}
 			// If there is a square below.
 			if (j < squareArray[i].size() - 1) {
-				square.bottomLeft->associate(*square.down.lock()->top.get());
-				square.bottomRight->associate(*square.up.lock()->top.get());
-				square.bottomRight->associate(*square.up.lock()->bottom.get());
+				square.bottomLeft->associate(square.down.lock()->top);
+				square.bottomRight->associate(square.up.lock()->top);
+				square.bottomRight->associate(square.up.lock()->bottom);
 			}
 			// If there is a square to the diagonal top left.
 			if (i > 0 && j > 0) {
-				square.topLeft->associate(*square.up.lock()->left.lock()->bottom.get());
+				square.topLeft->associate(square.up.lock()->left.lock()->bottom);
 			}
 			// If there is a square to the diagonal bottom left.
 			if (i > 0 && j < squareArray[i].size() - 1) {
-				square.bottomLeft->associate(*square.down.lock()->left.lock()->top.get());
-				square.bottomLeft->associate(*square.down.lock()->left.lock()->bottom.get());
+				square.bottomLeft->associate(square.down.lock()->left.lock()->top);
+				square.bottomLeft->associate(square.down.lock()->left.lock()->bottom);
 			}
 
 			// Finally, if we are at the last square in the row, we must associate the right-hand (top-right and bottom-right) vertices appropriately:
 
 			// Every vertex is associated with the faces in its own square.
-			square.topRight->associate(*square.top.get());
-			square.topRight->associate(*square.bottom.get());
-			square.bottomRight->associate(*square.bottom.get());
+			square.topRight->associate(square.top);
+			square.topRight->associate(square.bottom);
+			square.bottomRight->associate(square.bottom);
 
 			// If there is a square above.
 			if (j > 0) {
-				square.topRight->associate(*square.up.lock()->bottom.get());
+				square.topRight->associate(square.up.lock()->bottom);
 			}
 
 			// If there is a square below.
 			if (j < squareArray[i].size() - 1) {
-				square.bottomRight->associate(*square.down.lock()->top.get());
-				square.bottomRight->associate(*square.down.lock()->bottom.get());
+				square.bottomRight->associate(square.down.lock()->top);
+				square.bottomRight->associate(square.down.lock()->bottom);
 			}
 		}
 	}
@@ -164,9 +214,6 @@ void GridManager::makeZones() {
 				square->top->updateNeighbours(it->first, it->second);
 				square->bottom->updateNeighbours(it->first, it->second);
 			}
-			// Pass the triangles their IDs.
-			square->top->setID(square->ID);
-			square->bottom->setID(square->ID + 1);
 			// Finally, add to the face array.
 			faceArray.push_back(std::shared_ptr<TriangleFace>(square->top));
 			faceArray.push_back(std::shared_ptr<TriangleFace>(square->bottom));
@@ -174,13 +221,6 @@ void GridManager::makeZones() {
 	}
 };
 
-void TriangleFace::updateNeighbours(int distance, std::vector<int> neighbourIDs) {
-	if (!neighbourList.count(distance)) {
-		neighbourList.insert(std::make_pair(distance, neighbourIDs));
-	}
-	else {
-		neighbourList[distance] = neighbourIDs;
-	}
-}
+
 
 
