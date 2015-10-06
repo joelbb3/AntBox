@@ -6,11 +6,6 @@
 #include "Geometry.h"
 #include "stdafx.h"
 
-class GridManager;
-
-class Agent;
-class Affordance;
-
 class VisualObject {
 public:
     Vector position;
@@ -36,23 +31,3 @@ public:
 };
 
 
-
-class AgentManager : Steppable {
-private:
-    GridManager& gridManager;
-    static Vector defaultPosition;
-    std::multimap<int, std::shared_ptr<Agent>> agentList; // Each agent is keyed by the ID# of the face they occupy.
-    
-    AgentManager(GridManager& gridManager, Vector defaultPosition);
-    
-    bool isColliding(const Agent& a1, const Agent& a2);
-    void createAgent(std::string type, Vector position = defaultPosition);
-    void updateNeighbours();
-    void step();
-public:
-    enum AgentManagerFlag {
-        kill,
-        moved,
-        colliding
-    };
-};
