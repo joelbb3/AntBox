@@ -1,11 +1,10 @@
 #pragma once
-#include "stdafx.h"
-#include "Entity.h"
 #include <memory>
 #include <vector>
 #include <string>
 #include <memory>
-#include "Geometry.h"
+#include <set>
+#include "Entity.h"
 #include "Affordance.h"
 
 class Vector; // three dimensional Vector from Geometry.h
@@ -24,9 +23,10 @@ struct AgentState {
 };
 
 class Agent : public Steppable {
-	friend class AgentManager;
+    friend class ::AgentManager;
 	friend class AffordanceFactory;
 private:
+    int maxNeighbourRadius;
     const AgentManager& manager;
     std::set<AgentManager::AgentManagerFlag> flags; // Flags for use by the agent manager.
 	std::unique_ptr<AgentState> statepnt;	// Used to access state internally.
@@ -40,5 +40,6 @@ public:
 };
 
 class AgentFactory{
-    virtual std::shared_ptr<Agent> make(AgentType type);
+public:
+    static std::shared_ptr<Agent> make(std::string type){};
 };

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <algorithm>
 #include <set>
 #include <utility>
@@ -19,7 +18,7 @@ top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::vector<std::vector<
 
 /* TriangleFace */
 
-TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList), normal(cross(one - two, one - three)){
+TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList), normal(cross(*one - *two, *one - *three)){
 };
 
 
@@ -36,7 +35,7 @@ void Vertex::calculateNormal(){
     int numFaces = associatedFaces.size();
     Vector n(0,0,0);
     for(auto x : associatedFaces){
-        n += x.lock()->normal;
+        n = n + x.lock()->normal;
     }
     normal = n / numFaces;
 }
@@ -46,7 +45,7 @@ void Vertex::calculateNormal(){
 
 /* GridManager */
 
-int locatePoint(Vector& vec){
+int GridManager::locatePoint(Vector& vec){
     double squareWidth = sandboxWidth / squaresPerRow;
     double squareHeight = sandboxHeight / squaresPerColumn;
     int predictedRow = static_cast<int>(vec.x / squareWidth);
@@ -68,16 +67,16 @@ int locatePoint(Vector& vec){
 
 }
 
-std::vector<int> getBarycentricCoordinates(int faceID, Vector& vec){
+std::vector<double> GridManager::getBarycentricCoordinates(int faceID, Vector& vec){
     TriangleFace& triangle = *faceArray[faceID];
     Vector f1 = vec - *triangle.pointOne;
     Vector f2 = vec - *triangle.pointTwo;
     Vector f3 = vec - *triangle.pointThree;
-    double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree);
+    double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree).magnitude();
     double a = cross(f2, f3).magnitude();
     double b = cross(f1, f3).magnitude();
     double c = cross(f1, f2).magnitude();
-    return std::vector<int>{a, b, c};
+    return std::vector<double>{a, b, c};
 }
 
 double GridManager::absoluteInterpolateHeight(Vector& xyVec) {
@@ -86,19 +85,21 @@ double GridManager::absoluteInterpolateHeight(Vector& xyVec) {
 }
 
 double GridManager::interpolateHeight(int faceID, Vector& xyVec) {
-    std::vector<int> baryCoord = getBarycentricCoordinates(faceID, xyVec);
-    xyVec.z = (baryCoord[0] * triangle->pointOne.z) + (baryCoord[1] * triangle->pointTwo.z) + (baryCoord[2] * triangle->pointThree.z);
+    std::shared_ptr<TriangleFace> triangle = faceArray[faceID];
+    std::vector<double> baryCoord = getBarycentricCoordinates(faceID, xyVec);
+    xyVec.z = (baryCoord[0] * triangle->pointOne->z) + (baryCoord[1] * triangle->pointTwo->z) + (baryCoord[2] * triangle->pointThree->z);
     return xyVec.z;
 }
 
-double GridManager::absoluteInterpolateNormal(Vector& vec){
+Vector GridManager::absoluteInterpolateNormal(Vector& vec){
     int faceID = locatePoint(vec);
-    return interpolateNormal(vec);
+    return interpolateNormal(faceID, vec);
 }
 
-double GridManager::interpolateNormal(int faceID, Vector& vec){
-    std::vector<int> baryCoord = getBarycentricCoordinates(faceID, xyVec);
-    return (baryCoord[0] * triangle->pointOne.normal) + (baryCoord[1] * triangle->pointTwo.normal) + (baryCoord[2] * triangle->pointThree.normal);
+Vector GridManager::interpolateNormal(int faceID, Vector& vec){
+    std::shared_ptr<TriangleFace> triangle = faceArray[faceID];
+    std::vector<double> baryCoord = getBarycentricCoordinates(faceID, vec);
+    return (baryCoord[0] * triangle->pointOne->normal) + (baryCoord[1] * triangle->pointTwo->normal) + (baryCoord[2] * triangle->pointThree->normal);
 }
 
 std::vector<int> GridManager::getNeighbours(int faceID,int radius){
