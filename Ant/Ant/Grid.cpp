@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <algorithm>
 #include <set>
 #include <utility>
@@ -8,6 +9,7 @@
 
 /* SquareFace */
 
+
 SquareFace::SquareFace(int ID, std::shared_ptr<Vertex> topLeft, std::shared_ptr<Vertex> topRight, std::shared_ptr<Vertex> bottomLeft, std::shared_ptr<Vertex> bottomRight):
 ID(ID), topLeft(topLeft), topRight(topRight),
 bottomLeft(bottomLeft), bottomRight(bottomRight),
@@ -15,8 +17,8 @@ top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::vector<std::vector<
 };
 
 
-
 /* TriangleFace */
+
 
 TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList), normal(cross(*one - *two, *one - *three)){
 };
@@ -24,14 +26,22 @@ TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<
 
 /* Vertex */
 
+
 Vertex::Vertex(int ID, Vector position) : ID(ID), Vector(position){
 };
+
 
 void Vertex::associate(std::shared_ptr<TriangleFace> face){
     associatedFaces.push_back(std::weak_ptr<TriangleFace>(face));
 }
 
+
 void Vertex::calculateNormal(){
+    // Pre-condition: Vertex should be associated with at least one face.
+    if(associatedFaces.size() <= 0){
+        throw std::logic_error("Vertex #" + std::to_string(ID) + " calculating normal with no associated faces.");
+    }
+    
     int numFaces = associatedFaces.size();
     Vector n(0,0,0);
     for(auto x : associatedFaces){
@@ -45,7 +55,8 @@ void Vertex::calculateNormal(){
 
 /* GridManager */
 
-int GridManager::locatePoint(Vector& vec){
+
+int GridManager::locatePoint(Vector& vec){              // Returns false if the point is not found.
     double squareWidth = sandboxWidth / squaresPerRow;
     double squareHeight = sandboxHeight / squaresPerColumn;
     int predictedRow = static_cast<int>(vec.x / squareWidth);
@@ -64,8 +75,8 @@ int GridManager::locatePoint(Vector& vec){
         }
     }
     return false;
-
 }
+
 
 std::vector<double> GridManager::getBarycentricCoordinates(int faceID, Vector& vec){
     TriangleFace& triangle = *faceArray[faceID];

@@ -4,11 +4,7 @@
 #include <map>
 #include <string>
 #include "Geometry.h"
-
-class GridManager;
-
-class Agent;
-class Affordance;
+#include "stdafx.h"
 
 class VisualObject {
 public:
@@ -19,7 +15,7 @@ public:
     VisualObject(std::string& texturePath, Vector initialPosition);
     VisualObject();
     
-    Box getBoundingBox() const{};
+	Box getBoundingBox() const { return Box(Vector(0, 0, 0), 0, 0); };
 };
 
 
@@ -35,23 +31,3 @@ public:
 };
 
 
-
-class AgentManager : Steppable {
-private:
-    GridManager& gridManager;
-    static Vector defaultPosition;
-    std::multimap<int, std::shared_ptr<Agent>> agentList; // Each agent is keyed by the ID# of the face they occupy.
-    
-    AgentManager(GridManager& gridManager, Vector defaultPosition);
-    
-    bool isColliding(const Agent& a1, const Agent& a2);
-    void createAgent(std::string type, Vector position = defaultPosition);
-    void updateNeighbours();
-    void step();
-public:
-    enum AgentManagerFlag {
-        kill,
-        moved,
-        colliding
-    };
-};

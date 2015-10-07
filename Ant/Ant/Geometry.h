@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 struct Vector {
     double x;

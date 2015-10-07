@@ -1,12 +1,14 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include "stdafx.h"
 
 
 struct AgentState;
 
 enum AffordanceType {
-	damage
+	damage,
+    strengthen_pheremone
 };
 
 class Affordance {
@@ -27,6 +29,10 @@ private:
 		Damage(AgentState* holderState) : Affordance(holderState) {};
 	};
 
+    class StrengthenPheremone : public Affordance{
+        void operator()(std::vector<void*> args = std::vector<void*>());
+    };
+    
 public:
 	std::unique_ptr<Affordance> make(AgentState* holderState, AffordanceType type) {
 		switch (type) {
