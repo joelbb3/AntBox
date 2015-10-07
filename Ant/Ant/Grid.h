@@ -61,8 +61,8 @@ class GridManager {
     static double sandboxWidth;
     static double sandboxHeight;
     static double getDepth(double x, double y);
-    static void makeZones();
 public:
+    static void makeZones();
     static int locatePoint(Vector& vec);
     static std::vector<double> getBarycentricCoordinates(int faceID, Vector& vec);
     static double absoluteInterpolateHeight(Vector& xyVec); // Z-coordinate is modified in-place.

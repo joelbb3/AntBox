@@ -22,6 +22,7 @@ enum AgentType {
 
 
 struct AgentState {
+    int pherStrength;
 	/*
      Define properties that agents need to track as part of their state here.
      Would like to find a way to avoid having to lump different agents' state data members together whilst maintaining polymorphism in the Agent definition and in affordances (right now affordances operate through a pointer to an AgentState; don't want to have to make a seperate version of an affordance for each type of agent).
