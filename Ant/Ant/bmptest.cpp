@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
@@ -9,10 +10,11 @@ int main() {
 	
 
 	ifstream infile;
-	infile.open("filteredframes.txt");
+	infile.open("filteredframes1.txt");
 	if (!infile.is_open())
 	{
 		cout << "Could not open file.";
+		cin >> input;
 		return 0;
 	}
 	
@@ -26,11 +28,13 @@ int main() {
 	}
 	infile.close();
 	float min, max, dif;
-	min = *min_element(data, data + x*y);
-	max = *max_element(data, data + x*y);
+	//min = *min_element(data, data + x*y);
+	min = 745;
+	//max = *max_element(data, data + x*y);
+	max = 808;
 	dif = max - min;
-	cout << "The smallest element is " << min << '\n';
-	cout << "The largest element is " << max << '\n';
+	//cout << "The smallest element is " << min << '\n';
+	//cout << "The largest element is " << max << '\n';
 
 	typedef unsigned char Uint8;
 	Uint8* RGBA;
@@ -38,7 +42,15 @@ int main() {
 
 	for (int i = 0; i < x*y; ++i) {
 		float hue;
-		hue = ((data[i] - min) / dif) * 240;
+		if (data[i] < min) {
+			hue = 0;
+		}
+		else if (data[i] > max) {
+			hue = 240;
+		}
+		else {
+			hue = ((data[i] - min) / dif) * 240;
+		}
 
 		//Convert from hue to RGB: http://www.rapidtables.com/convert/color/hsl-to-rgb.htm
 		float C, X, m;
@@ -84,10 +96,36 @@ int main() {
 
 		//cout << mods[0] + m << " " << mods[1] + m << " " << mods[2] + m << "\n";
 	}
-	cout << (int)RGBA[0] << " " << (int)RGBA[1] << " " << (int)RGBA[2] << "\n";
-	cout << (int)RGBA[45 * 4 + 0] << " " << (int)RGBA[45 * 4 + 1] << " " << (int)RGBA[45 * 4 + 2] << "\n";
-	cout << (int)RGBA[158 * 4 + 0] << " " << (int)RGBA[158 * 4 + 1] << " " << (int)RGBA[158 * 4 + 2] << "\n";
-	cout << (int)RGBA[4000 * 4 + 0] << " " << (int)RGBA[4000 * 4 + 1] << " " << (int)RGBA[4000 * 4 + 2] << "\n";
-	cin >> input;
+	//cout << (int)RGBA[0] << " " << (int)RGBA[1] << " " << (int)RGBA[2] << "\n";
+	//cout << (int)RGBA[45 * 4 + 0] << " " << (int)RGBA[45 * 4 + 1] << " " << (int)RGBA[45 * 4 + 2] << "\n";
+	//cout << (int)RGBA[158 * 4 + 0] << " " << (int)RGBA[158 * 4 + 1] << " " << (int)RGBA[158 * 4 + 2] << "\n";
+	//cout << (int)RGBA[4000 * 4 + 0] << " " << (int)RGBA[4000 * 4 + 1] << " " << (int)RGBA[4000 * 4 + 2] << "\n";
+
+
+	sf::Texture bgTexture;
+	bgTexture.create(x, y);
+	bgTexture.update(RGBA);
+	sf::Sprite bgSprite;
+	bgSprite.setTexture(bgTexture);
+
+	sf::RenderWindow window(sf::VideoMode(x, y), "Demo Window");
+
+	while (window.isOpen()) {
+		// check all the window's events that were triggered since the last iteration of the loop
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			// "close requested" event: we close the window
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+		window.clear(sf::Color::Black);
+
+		window.draw(bgSprite);
+
+		window.display();
+	}
+
+
 	return 1;
 }
