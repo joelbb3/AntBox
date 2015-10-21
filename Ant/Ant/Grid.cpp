@@ -1,11 +1,17 @@
-#include "stdafx.h"
 #include <algorithm>
 #include <set>
 #include <utility>
 #include <exception>
 #include <string>
 #include "Grid.h"
+#include <iostream>
+#include <cmath>
 #include "Geometry.h"
+#include "SurfaceRenderer.h"
+
+std::vector<std::shared_ptr<TriangleFace>> GridManager::faceArray{};
+int GridManager::sandboxWidth;
+int GridManager::sandboxHeight;
 
 /* SquareFace */
 
@@ -23,6 +29,22 @@ top(new TriangleFace(ID, bottomLeft, topLeft, topRight, std::vector<std::vector<
 TriangleFace::TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList) : ID(ID), pointOne(one), pointTwo(two), pointThree(three), neighbourList(neighbourList), normal(cross(*one - *two, *one - *three)){
 };
 
+bool SameSide(Vector p1, Vector p2, Vector a, Vector b){
+    Vector cp1 = cross(b-a, p1-a);
+    Vector cp2 = cross(b-a, p2-a);
+    return cp1.dot(cp2) >= 0;
+}
+
+bool PointInTriangle(Vector p, Vector a, Vector b, Vector c){
+    return(SameSide(p, a, b, c) && SameSide(p, b, a, c) && SameSide(p, c, a, b));
+}
+
+bool TriangleFace::contains(Vector& point){
+    return PointInTriangle(point, *pointOne, *pointTwo, *pointThree);
+    /*
+    double m = std::abs((pointThree->z - pointOne->z) / (pointThree->x - pointOne->x));
+    return (point.y > pointOne->y + (point.x * m) && point.y < pointTwo->y) || (point.y < pointOne->y + (point.x * m) && point.y > pointTwo->y);*/
+}
 
 /* Vertex */
 
@@ -57,12 +79,17 @@ void Vertex::calculateNormal(){
 
 
 int GridManager::locatePoint(Vector& vec){              // Returns false if the point is not found.
-    double squareWidth = sandboxWidth / squaresPerRow;
-    double squareHeight = sandboxHeight / squaresPerColumn;
+    double squareWidth = SurfaceRenderer::getCurrentWidth() / squaresPerRow;
+    double squareHeight = SurfaceRenderer::getCurrentHeight() / squaresPerColumn;
     int predictedRow = static_cast<int>(vec.x / squareWidth);
     int predictedColumn = static_cast<int>(vec.y / squareHeight);
-    int predictedSquareID = (predictedColumn * squaresPerRow) + predictedRow;
+    //int predictedSquareID = (predictedColumn * squaresPerRow) + predictedRow;
+    int predictedSquareID = (predictedRow * squaresPerColumn) + predictedColumn;
     int predictedTriangleID = predictedSquareID * 2;
+    std::cout << "Predicted triangle has vertices: ";
+    faceArray[predictedTriangleID]->pointOne->print();
+    faceArray[predictedTriangleID]->pointTwo->print();
+    faceArray[predictedTriangleID]->pointThree->print();
     if (faceArray[predictedTriangleID]->contains(vec)) {
         return predictedTriangleID;
     } else {
@@ -79,14 +106,18 @@ int GridManager::locatePoint(Vector& vec){              // Returns false if the 
 
 
 std::vector<double> GridManager::getBarycentricCoordinates(int faceID, Vector& vec){
+    std::cout << "getBaryCentricCoordinates called with vector (" << vec.x << ", " << vec.y << ", " << vec.z << ")\n";
     TriangleFace& triangle = *faceArray[faceID];
-    Vector f1 = vec - *triangle.pointOne;
-    Vector f2 = vec - *triangle.pointTwo;
-    Vector f3 = vec - *triangle.pointThree;
+    std::cout << "Triangle vertices are at: (" << triangle.pointOne->x << ", " << triangle.pointOne->y << ", " << triangle.pointOne->z << "), (" << triangle.pointTwo->x << ", " << triangle.pointTwo->y << ", " << triangle.pointTwo->z << "), (" << triangle.pointThree->x << ", " << triangle.pointThree->y << ", " << triangle.pointThree->z << ")\n";
+    Vector f1 = *triangle.pointOne - vec;
+    Vector f2 = *triangle.pointTwo - vec;
+    Vector f3 = *triangle.pointThree - vec;
+    std::cout << "Calculated f1 - " << f1.magnitude() << " f2 - " << f2.magnitude() << " f3 - " << f3.magnitude() << "\n";
     double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree).magnitude();
     double a = cross(f2, f3).magnitude();
     double b = cross(f1, f3).magnitude();
     double c = cross(f1, f2).magnitude();
+    std::cout << "Returning barycentric coordinates: a - " << a << " b - " << b << " c - " << c << "\n";
     return std::vector<double>{a, b, c};
 }
 
@@ -96,7 +127,9 @@ double GridManager::absoluteInterpolateHeight(Vector& xyVec) {
 }
 
 double GridManager::interpolateHeight(int faceID, Vector& xyVec) {
+    std::cout << "Interpolating height...\n";
     std::shared_ptr<TriangleFace> triangle = faceArray[faceID];
+    std::cout << "Vertex heights are: " << triangle->pointOne->z << " " << triangle->pointTwo->z << " " << triangle->pointThree->z << "\n";
     std::vector<double> baryCoord = getBarycentricCoordinates(faceID, xyVec);
     xyVec.z = (baryCoord[0] * triangle->pointOne->z) + (baryCoord[1] * triangle->pointTwo->z) + (baryCoord[2] * triangle->pointThree->z);
     return xyVec.z;
@@ -130,17 +163,21 @@ void GridManager::makeZones() {
 	int ID = 0;
     std::vector<std::vector<std::shared_ptr<Vertex>>> vertexArray;
     std::vector<std::vector<std::shared_ptr<SquareFace>>> squareArray;
-	double squareWidth = sandboxWidth / squaresPerRow;
-	double squareHeight = sandboxHeight / squaresPerColumn;
+	int squareWidth = SurfaceRenderer::getCurrentWidth() / squaresPerRow;
+	int squareHeight = SurfaceRenderer::getCurrentHeight() / squaresPerColumn;
+    
+    std::cerr << "Stage 1 passed.\n";
     
     // Fill the vertex array.
-    for (double i = 0; i < sandboxWidth; i += squareWidth) {
+    for (int i = 0; i < SurfaceRenderer::getCurrentWidth(); i += squareWidth) {
         std::vector<std::shared_ptr<Vertex>> vertexColumn;
-        for (double j = 0; j < sandboxHeight; j += squareHeight) {
-            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(ID++, Vector(i, j, getDepth(i, j)))));
+        for (int j = 0; j < SurfaceRenderer::getCurrentHeight(); j += squareHeight) {
+            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(ID++, Vector(i, j, SurfaceRenderer::getDepth(i, j)))));
         }
         vertexArray.push_back(vertexColumn);
     }
+    
+    std::cerr << "Stage 2 passed.\n";
     
     // Fill the square array.
     ID = 0;
@@ -152,6 +189,8 @@ void GridManager::makeZones() {
 		ID += 2;
         squareArray.push_back(squareColumn);
     }
+    
+    std::cerr << "Stage 3 passed.\n";
     
     // Link squares.
     for (int i = 0; i < squareArray.size(); ++i){
@@ -171,6 +210,8 @@ void GridManager::makeZones() {
         }
     }
     
+    std::cerr << "Stage 4 passed.\n";
+    
     // Associate vertices with faces.
 	for (int i = 0; i < squareArray.size(); ++i) {
 		for (int j = 0; j < squareArray[i].size(); ++j) {
@@ -182,54 +223,13 @@ void GridManager::makeZones() {
 			square.topLeft->associate(square.top);
 			square.bottomLeft->associate(square.top);
 			square.bottomLeft->associate(square.bottom);
-
-			// If there is a square to the left.
-			if (i > 0) {
-				square.topLeft->associate(square.left.lock()->top);
-				square.topLeft->associate(square.left.lock()->bottom);
-				square.bottomLeft->associate(square.left.lock()->top);
-			}
-			// If there is a square above.
-			if (j > 0) {
-				square.topLeft->associate(square.up.lock()->top);
-				square.topLeft->associate(square.up.lock()->bottom);
-				square.topRight->associate(square.up.lock()->bottom);
-			}
-			// If there is a square below.
-			if (j < squareArray[i].size() - 1) {
-				square.bottomLeft->associate(square.down.lock()->top);
-				square.bottomRight->associate(square.up.lock()->top);
-				square.bottomRight->associate(square.up.lock()->bottom);
-			}
-			// If there is a square to the diagonal top left.
-			if (i > 0 && j > 0) {
-				square.topLeft->associate(square.up.lock()->left.lock()->bottom);
-			}
-			// If there is a square to the diagonal bottom left.
-			if (i > 0 && j < squareArray[i].size() - 1) {
-				square.bottomLeft->associate(square.down.lock()->left.lock()->top);
-				square.bottomLeft->associate(square.down.lock()->left.lock()->bottom);
-			}
-
-			// Finally, if we are at the last square in the row, we must associate the right-hand (top-right and bottom-right) vertices appropriately:
-
-			// Every vertex is associated with the faces in its own square.
-			square.topRight->associate(square.top);
-			square.topRight->associate(square.bottom);
-			square.bottomRight->associate(square.bottom);
-
-			// If there is a square above.
-			if (j > 0) {
-				square.topRight->associate(square.up.lock()->bottom);
-			}
-
-			// If there is a square below.
-			if (j < squareArray[i].size() - 1) {
-				square.bottomRight->associate(square.down.lock()->top);
-				square.bottomRight->associate(square.down.lock()->bottom);
-			}
+            square.topRight->associate(square.top);
+            square.topRight->associate(square.top);
+            square.bottomRight->associate(square.bottom);
 		}
 	}
+    
+    std::cerr << "Stage 5 passed.\n";
     
 	// Set neighbours (within the squares).
 	for (int i = 0; i < squareArray.size(); ++i) {
@@ -266,6 +266,8 @@ void GridManager::makeZones() {
 			squareArray[i][j]->neighbourList = neighboursList;
 		}
 	}
+    
+    std::cerr << "Stage 6 passed.\n";
 
 	// Collect our finished triangle faces.
 	for (auto& squareColumn : squareArray) {
@@ -280,6 +282,14 @@ void GridManager::makeZones() {
 			faceArray.push_back(std::shared_ptr<TriangleFace>(square->bottom));
 		}
 	}
+    
+    std::cerr << "Stage 7 passed.\n";
+    
+    /*for(auto& x : faceArray){
+        std::cout << x->pointOne->z << " " << x->pointTwo->z << " " << x->pointThree->z << "\n";
+    }*/
+    Vector test(60,60,60);
+    std::cout << "TEST: " << interpolateHeight(locatePoint(test), test);
 };
 
 
@@ -292,6 +302,3 @@ bool indexInArray(int arrayWidth, int arrayHeight, int i, int j) {
 	}
 };
 
-double GridManager::getDepth(double x, double y) {
-	return 5.0;
-}

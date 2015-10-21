@@ -1,0 +1,345 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5D8BBC8C1BD73CF0005C1CE5 /* Affordance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBC801BD73CF0005C1CE5 /* Affordance.cpp */; };
+		5D8BBC8D1BD73CF0005C1CE5 /* Agent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBC821BD73CF0005C1CE5 /* Agent.cpp */; };
+		5D8BBC8E1BD73CF0005C1CE5 /* Ant.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBC841BD73CF0005C1CE5 /* Ant.cpp */; };
+		5D8BBC8F1BD73CF0005C1CE5 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBC861BD73CF0005C1CE5 /* Entity.cpp */; };
+		5D8BBC901BD73CF0005C1CE5 /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBC881BD73CF0005C1CE5 /* Geometry.cpp */; };
+		5D8BBC911BD73CF0005C1CE5 /* Grid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBC8A1BD73CF0005C1CE5 /* Grid.cpp */; };
+		5D8BBCB71BD745D2005C1CE5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBCB61BD745D2005C1CE5 /* main.cpp */; };
+		5D8BBCBA1BD76425005C1CE5 /* AgentManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBCB81BD76425005C1CE5 /* AgentManager.cpp */; };
+		5D8BBCBD1BD784AE005C1CE5 /* SurfaceRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8BBCBB1BD784AE005C1CE5 /* SurfaceRenderer.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5D8BBC681BD73CB4005C1CE5 /* SandboxSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SandboxSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D8BBC6C1BD73CB4005C1CE5 /* SandboxSim-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SandboxSim-Info.plist"; sourceTree = "<group>"; };
+		5D8BBC801BD73CF0005C1CE5 /* Affordance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Affordance.cpp; path = ../../Ant/Affordance.cpp; sourceTree = "<group>"; };
+		5D8BBC811BD73CF0005C1CE5 /* Affordance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Affordance.h; path = ../../Ant/Affordance.h; sourceTree = "<group>"; };
+		5D8BBC821BD73CF0005C1CE5 /* Agent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Agent.cpp; path = ../../Ant/Agent.cpp; sourceTree = "<group>"; };
+		5D8BBC831BD73CF0005C1CE5 /* Agent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Agent.h; path = ../../Ant/Agent.h; sourceTree = "<group>"; };
+		5D8BBC841BD73CF0005C1CE5 /* Ant.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ant.cpp; path = ../../Ant/Ant.cpp; sourceTree = "<group>"; };
+		5D8BBC851BD73CF0005C1CE5 /* Ant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ant.h; path = ../../Ant/Ant.h; sourceTree = "<group>"; };
+		5D8BBC861BD73CF0005C1CE5 /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Entity.cpp; path = ../../Ant/Entity.cpp; sourceTree = "<group>"; };
+		5D8BBC871BD73CF0005C1CE5 /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Entity.h; path = ../../Ant/Entity.h; sourceTree = "<group>"; };
+		5D8BBC881BD73CF0005C1CE5 /* Geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Geometry.cpp; path = ../../Ant/Geometry.cpp; sourceTree = "<group>"; };
+		5D8BBC891BD73CF0005C1CE5 /* Geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Geometry.h; path = ../../Ant/Geometry.h; sourceTree = "<group>"; };
+		5D8BBC8A1BD73CF0005C1CE5 /* Grid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Grid.cpp; path = ../../Ant/Grid.cpp; sourceTree = "<group>"; };
+		5D8BBC8B1BD73CF0005C1CE5 /* Grid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Grid.h; path = ../../Ant/Grid.h; sourceTree = "<group>"; };
+		5D8BBCB61BD745D2005C1CE5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../Ant/main.cpp; sourceTree = "<group>"; };
+		5D8BBCB81BD76425005C1CE5 /* AgentManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AgentManager.cpp; path = ../../Ant/AgentManager.cpp; sourceTree = "<group>"; };
+		5D8BBCB91BD76425005C1CE5 /* AgentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AgentManager.h; path = ../../Ant/AgentManager.h; sourceTree = "<group>"; };
+		5D8BBCBB1BD784AE005C1CE5 /* SurfaceRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SurfaceRenderer.cpp; path = ../../Ant/SurfaceRenderer.cpp; sourceTree = "<group>"; };
+		5D8BBCBC1BD784AE005C1CE5 /* SurfaceRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SurfaceRenderer.h; path = ../../Ant/SurfaceRenderer.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5D8BBC641BD73CB4005C1CE5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5D8BBC5E1BD73CB4005C1CE5 = {
+			isa = PBXGroup;
+			children = (
+				5D8BBC6A1BD73CB4005C1CE5 /* SandboxSim */,
+				5D8BBC691BD73CB4005C1CE5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5D8BBC691BD73CB4005C1CE5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5D8BBC681BD73CB4005C1CE5 /* SandboxSim.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D8BBC6A1BD73CB4005C1CE5 /* SandboxSim */ = {
+			isa = PBXGroup;
+			children = (
+				5D8BBCB61BD745D2005C1CE5 /* main.cpp */,
+				5D8BBCBB1BD784AE005C1CE5 /* SurfaceRenderer.cpp */,
+				5D8BBCBC1BD784AE005C1CE5 /* SurfaceRenderer.h */,
+				5D8BBC801BD73CF0005C1CE5 /* Affordance.cpp */,
+				5D8BBC811BD73CF0005C1CE5 /* Affordance.h */,
+				5D8BBC821BD73CF0005C1CE5 /* Agent.cpp */,
+				5D8BBC831BD73CF0005C1CE5 /* Agent.h */,
+				5D8BBCB81BD76425005C1CE5 /* AgentManager.cpp */,
+				5D8BBCB91BD76425005C1CE5 /* AgentManager.h */,
+				5D8BBC861BD73CF0005C1CE5 /* Entity.cpp */,
+				5D8BBC871BD73CF0005C1CE5 /* Entity.h */,
+				5D8BBC841BD73CF0005C1CE5 /* Ant.cpp */,
+				5D8BBC851BD73CF0005C1CE5 /* Ant.h */,
+				5D8BBC881BD73CF0005C1CE5 /* Geometry.cpp */,
+				5D8BBC891BD73CF0005C1CE5 /* Geometry.h */,
+				5D8BBC8A1BD73CF0005C1CE5 /* Grid.cpp */,
+				5D8BBC8B1BD73CF0005C1CE5 /* Grid.h */,
+				5D8BBC721BD73CB4005C1CE5 /* Resources */,
+				5D8BBC6B1BD73CB4005C1CE5 /* Supporting Files */,
+			);
+			path = SandboxSim;
+			sourceTree = "<group>";
+		};
+		5D8BBC6B1BD73CB4005C1CE5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				5D8BBC6C1BD73CB4005C1CE5 /* SandboxSim-Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		5D8BBC721BD73CB4005C1CE5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5D8BBC671BD73CB4005C1CE5 /* SandboxSim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5D8BBC7D1BD73CB4005C1CE5 /* Build configuration list for PBXNativeTarget "SandboxSim" */;
+			buildPhases = (
+				5D8BBC631BD73CB4005C1CE5 /* Sources */,
+				5D8BBC641BD73CB4005C1CE5 /* Frameworks */,
+				5D8BBC651BD73CB4005C1CE5 /* Resources */,
+				5D8BBC661BD73CB4005C1CE5 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SandboxSim;
+			productName = SandboxSim;
+			productReference = 5D8BBC681BD73CB4005C1CE5 /* SandboxSim.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5D8BBC5F1BD73CB4005C1CE5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = "Joel Brand";
+				TargetAttributes = {
+					5D8BBC671BD73CB4005C1CE5 = {
+						CreatedOnToolsVersion = 6.4;
+					};
+				};
+			};
+			buildConfigurationList = 5D8BBC621BD73CB4005C1CE5 /* Build configuration list for PBXProject "SandboxSim" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5D8BBC5E1BD73CB4005C1CE5;
+			productRefGroup = 5D8BBC691BD73CB4005C1CE5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5D8BBC671BD73CB4005C1CE5 /* SandboxSim */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5D8BBC651BD73CB4005C1CE5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5D8BBC661BD73CB4005C1CE5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This shell script simply copies required SFML dylibs/frameworks into the application bundle frameworks folder.\n# If you're using static libraries (which is not recommended) you should remove this script from your project.\n\n# SETTINGS\nCMAKE_INSTALL_FRAMEWORK_PREFIX=\"/Library/Frameworks\"\nCMAKE_INSTALL_LIB_PREFIX=\"/usr/local/lib\"\nFRAMEWORKS_FULL_PATH=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/\"\n\n# Are we building a project that uses frameworks or dylibs?\ncase \"$SFML_BINARY_TYPE\" in\n    DYLIBS)\n        frameworks=\"false\"\n        ;;\n    *)\n        frameworks=\"true\"\n        ;;\nesac\n\n# Echoes to stderr\nerror () # $* message to display\n{\n    echo $* 1>&2\n    exit 2\n}\n\nassert () # $1 is a boolean, $2...N is an error message\n{\n    if [ $# -lt 2 ]\n    then\n        error \"Internal error in assert: not enough args\"\n    fi\n\n    if [ $1 -ne 0 ]\n    then\n        shift\n        error \"$*\"\n    fi\n}\n\nforce_remove () # $@ is some paths\n{\n    test $# -ge 1\n    assert $? \"force_remove() requires at least one parameter\"\n    rm -fr $@\n    assert $? \"couldn't remove $@\"\n}\n\ncopy () # $1 is a source, $2 is a destination\n{\n    test $# -eq 2\n    assert $? \"copy() requires two parameters\"\n    ditto \"$1\" \"$2\"\n    assert $? \"couldn't copy $1 to $2\"\n}\n\nrequire () # $1 is a SFML module like 'system' or 'audio'\n{\n    dest=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH/\"\n\n    if [ -z \"$1\" ]\n    then\n        error \"require() requires one parameter!\"\n    else\n        # clean potentially old stuff\n        force_remove \"$dest/libsfml-$1\"*\n        force_remove \"$dest/sfml-$1.framework\"\n\n        # copy SFML libraries\n        if [ \"$frameworks\" = \"true\" ]\n        then\n            source=\"$CMAKE_INSTALL_FRAMEWORK_PREFIX/sfml-$1.framework\"\n            target=\"sfml-$1.framework\"\n        elif [ \"$SFML_LINK_DYLIBS_SUFFIX\" = \"-d\" ]\n        then\n            source=\"$CMAKE_INSTALL_LIB_PREFIX/libsfml-$1-d.dylib\"\n            target=\"`readlink $source`\"\n        else\n            source=\"$CMAKE_INSTALL_LIB_PREFIX/libsfml-$1.dylib\"\n            target=\"`readlink $source`\"\n        fi\n\n        copy \"$source\" \"$dest/$target\"\n\n        # copy extra dependencies\n        if [ \"$1\" = \"audio\" ]\n        then\n            # copy \"FLAC\" \"ogg\" \"vorbis\" \"vorbisenc\" \"vorbisfile\" \"OpenAL\" frameworks too\n            for f in \"FLAC\" \"ogg\" \"vorbis\" \"vorbisenc\" \"vorbisfile\" \"OpenAL\"\n            do\n                copy \"$CMAKE_INSTALL_FRAMEWORK_PREFIX/$f.framework\" \"$dest/$f.framework\"\n            done\n        elif [ \"$1\" = \"graphics\" ]\n        then\n            copy \"$CMAKE_INSTALL_FRAMEWORK_PREFIX/freetype.framework\" \"$dest/freetype.framework\"\n        fi\n    fi\n}\n\nif [ -n \"$SFML_SYSTEM\" ]\nthen\n    require \"system\"\nfi\n\nif [ -n \"$SFML_AUDIO\" ]\nthen\n    require \"audio\"\nfi\n\nif [ -n \"$SFML_NETWORK\" ]\nthen\n    require \"network\"\nfi\n\nif [ -n \"$SFML_WINDOW\" ]\nthen\n    require \"window\"\nfi\n\nif [ -n \"$SFML_GRAPHICS\" ]\nthen\n    require \"graphics\"\nfi\n\n                ";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5D8BBC631BD73CB4005C1CE5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D8BBC8F1BD73CF0005C1CE5 /* Entity.cpp in Sources */,
+				5D8BBCBD1BD784AE005C1CE5 /* SurfaceRenderer.cpp in Sources */,
+				5D8BBC8E1BD73CF0005C1CE5 /* Ant.cpp in Sources */,
+				5D8BBC901BD73CF0005C1CE5 /* Geometry.cpp in Sources */,
+				5D8BBCBA1BD76425005C1CE5 /* AgentManager.cpp in Sources */,
+				5D8BBC911BD73CF0005C1CE5 /* Grid.cpp in Sources */,
+				5D8BBC8C1BD73CF0005C1CE5 /* Affordance.cpp in Sources */,
+				5D8BBC8D1BD73CF0005C1CE5 /* Agent.cpp in Sources */,
+				5D8BBCB71BD745D2005C1CE5 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5D8BBC7B1BD73CB4005C1CE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					i386,
+					x86_64,
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				FRAMEWORK_SEARCH_PATHS = (
+					/Library/Frameworks/,
+					"$(inherited)",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include/,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib/,
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(SFML_SYSTEM)",
+					"$(SFML_WINDOW)",
+					"$(SFML_GRAPHICS)",
+					"$(SFML_AUDIO)",
+					"$(SFML_NETWORK)",
+				);
+				SFML_AUDIO = "$(SFML_LINK_PREFIX) sfml-audio$(SFML_LINK_SUFFIX)";
+				SFML_BINARY_TYPE = FRAMEWORKS;
+				SFML_GRAPHICS = "$(SFML_LINK_PREFIX) sfml-graphics$(SFML_LINK_SUFFIX)";
+				SFML_LINK_DYLIBS_PREFIX = "-l";
+				SFML_LINK_DYLIBS_SUFFIX = "";
+				SFML_LINK_FRAMEWORKS_PREFIX = "-framework";
+				SFML_LINK_FRAMEWORKS_SUFFIX = "";
+				SFML_LINK_PREFIX = "$(SFML_LINK_$(SFML_BINARY_TYPE)_PREFIX)";
+				SFML_LINK_SUFFIX = "$(SFML_LINK_$(SFML_BINARY_TYPE)_SUFFIX)";
+				SFML_NETWORK = "";
+				SFML_SYSTEM = "$(SFML_LINK_PREFIX) sfml-system$(SFML_LINK_SUFFIX)";
+				SFML_WINDOW = "$(SFML_LINK_PREFIX) sfml-window$(SFML_LINK_SUFFIX)";
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		5D8BBC7C1BD73CB4005C1CE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					i386,
+					x86_64,
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				FRAMEWORK_SEARCH_PATHS = (
+					/Library/Frameworks/,
+					"$(inherited)",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include/,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib/,
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(SFML_SYSTEM)",
+					"$(SFML_WINDOW)",
+					"$(SFML_GRAPHICS)",
+					"$(SFML_AUDIO)",
+					"$(SFML_NETWORK)",
+				);
+				SFML_AUDIO = "$(SFML_LINK_PREFIX) sfml-audio$(SFML_LINK_SUFFIX)";
+				SFML_BINARY_TYPE = FRAMEWORKS;
+				SFML_GRAPHICS = "$(SFML_LINK_PREFIX) sfml-graphics$(SFML_LINK_SUFFIX)";
+				SFML_LINK_DYLIBS_PREFIX = "-l";
+				SFML_LINK_DYLIBS_SUFFIX = "";
+				SFML_LINK_FRAMEWORKS_PREFIX = "-framework";
+				SFML_LINK_FRAMEWORKS_SUFFIX = "";
+				SFML_LINK_PREFIX = "$(SFML_LINK_$(SFML_BINARY_TYPE)_PREFIX)";
+				SFML_LINK_SUFFIX = "$(SFML_LINK_$(SFML_BINARY_TYPE)_SUFFIX)";
+				SFML_NETWORK = "";
+				SFML_SYSTEM = "$(SFML_LINK_PREFIX) sfml-system$(SFML_LINK_SUFFIX)";
+				SFML_WINDOW = "$(SFML_LINK_PREFIX) sfml-window$(SFML_LINK_SUFFIX)";
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		5D8BBC7E1BD73CB4005C1CE5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "SandboxSim/SandboxSim-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		5D8BBC7F1BD73CB4005C1CE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "SandboxSim/SandboxSim-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5D8BBC621BD73CB4005C1CE5 /* Build configuration list for PBXProject "SandboxSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D8BBC7B1BD73CB4005C1CE5 /* Debug */,
+				5D8BBC7C1BD73CB4005C1CE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5D8BBC7D1BD73CB4005C1CE5 /* Build configuration list for PBXNativeTarget "SandboxSim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D8BBC7E1BD73CB4005C1CE5 /* Debug */,
+				5D8BBC7F1BD73CB4005C1CE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5D8BBC5F1BD73CB4005C1CE5 /* Project object */;
+}

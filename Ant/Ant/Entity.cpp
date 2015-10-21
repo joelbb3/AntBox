@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Agent.h"
 #include "Grid.h"
 #include <utility>
@@ -6,12 +5,15 @@
 
 /* VisualObject -- still needs to be defined -- */
 
-int VisualObject::IDGenerator = 0;
+int VisualObject::visualObjectIDGenerator = 0;
 
-VisualObject::VisualObject(std::string& texturePath, Vector initialPosition) : ID(IDGenerator++), position(initialPosition) {
+VisualObject::VisualObject(std::string& texturePath, Vector initialPosition) : visualObjectID(visualObjectIDGenerator++), position(initialPosition){
+    texture.loadFromFile(texturePath);
+    texture.setSmooth(true);
+    sprite.setTexture(texture);
 }
 
-VisualObject::VisualObject() : ID(IDGenerator++){
+VisualObject::VisualObject() : visualObjectID(visualObjectIDGenerator++){
 };
 
 /* Steppable */

@@ -1,0 +1,104 @@
+#include "Ant.h"
+#include "Grid.h"
+#include "AgentManager.h"
+#include <iostream>
+#include <cmath>
+#include <SFML/Graphics.hpp>
+
+Vector Ant::constrainToSurface (const Vector velocity)
+
+{
+	if(velocity.x==0&& velocity.y==0)
+	{
+		Vector down = getSteepestDown();
+		float temp = sqrt(pow(down.x,2) + pow(down.y,2));
+		down = down * velocity.z*sin(atan(down.z/temp));
+		return down;
+	}
+
+	//else, take the change in x and y
+	int x = position.x + velocity.x;
+	int y = position.y + velocity.y;
+	//find the corresponding zs
+    int z = GridManager::interpolateHeight(faceID, position);
+	//find the vector in the direction of movement constained to surface
+	Vector direction = Vector(x - position.x, y - position.y, z - position.z);
+    direction = direction / direction.magnitude();
+    int speed = velocity.dot(direction);
+	Vector newVelocity = speed * direction;
+	return newVelocity;
+}
+
+Vector Ant::getSteepestDown()
+{
+    Vector normal = GridManager::interpolateNormal(faceID, position);
+	if(normal.x == 0 && normal.x == 0) // tangent plane is a horizontal plane
+	{
+		return Vector(0,0,0);
+	}
+
+	float a = -(normal.x/normal.y);
+	Vector tangent = Vector(1,a,0);
+    Vector steepest = normal.cross(tangent) / normal.cross(tangent).magnitude();
+	// z component must be between -1 and 1
+	if(steepest.z > 0)
+		steepest = steepest * -1;
+	return steepest;
+}
+
+
+void Ant::step(){
+    position = Vector(position.x + 1, position.y, position.z);
+    //std::cout << GridManager::interpolateHeight(AgentManager::getFace(agentID), position) << "\n";
+    sprite.setPosition(position.x, position.y);
+    flags.insert(AgentFlags::moved);
+    /*
+	Vector force = getSteeringForce();
+	// f / m = a
+	Vector newAcceleration = (force / _mass);
+	// get velocity
+	Vector newVelocity = _velocity;
+
+	// change the velocity by the acceleration * delta of time
+    int elapsedTime = stepClock.getElapsedTime().asMilliseconds();
+	newVelocity = newVelocity + (newAcceleration * elapsedTime);
+	// set velocity and speed
+	setSpeed(newVelocity.magnitude());
+	if(_speed > _maxSpeed)
+	{
+        newVelocity = newVelocity / newVelocity.magnitude();
+		newVelocity = newVelocity * _maxSpeed;
+		setSpeed(_maxSpeed);
+	}
+
+
+	constrainToSurface(newVelocity);
+	setVelocity(newVelocity);
+	setPosition (position + (newVelocity * elapsedTime));
+    */
+}
+
+
+Vector Ant::getClimbMountainForce(){
+
+    Vector normal = GridManager::interpolateNormal(faceID, position);
+	if(normal.x==0 && normal.x==0) // tangent plane is a horizontal plane
+	{
+		return Vector(0,0,0);
+	}
+
+	float a = -(normal.x/normal.y);
+	Vector tangent = Vector(1,a,0);
+    Vector steepest = normal.cross(tangent) / normal.cross(tangent).magnitude();
+	// z component must be between -1 and 1
+	if(steepest.z < 0)
+		steepest = steepest * -1;
+	// z component between 0 and 1, the closer to 1, the harder it should be to get up
+	steepest = steepest * 5* pow(steepest.z -1,2);
+	return steepest;
+}
+
+
+
+
+

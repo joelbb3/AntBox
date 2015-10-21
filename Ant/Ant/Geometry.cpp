@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <math.h>
 #include <limits>
 #include <algorithm>
@@ -27,7 +26,7 @@ Vector operator/(const Vector& v1, const double& x){
     return Vector(v1.x / x, v1.y / x, v1.z / x);
 }
 
-Vector operator*(const Vector& v1, double x){
+Vector operator*(const Vector& v1, const double& x){
     return Vector(v1.x * x, v1.y * x, v1.z * x);
 }
 
@@ -35,15 +34,15 @@ Vector operator*(const double& x, const Vector& v1){
     return Vector(v1.x * x, v1.y * x, v1.z * x);
 }
 
-Vector Vector::cross(const Vector& v) {
+Vector Vector::cross(const Vector& v) const{
 	return Vector((y * v.z) - (z * v.y), (x * v.z) - (z * v.x), (x * v.y) - (y * v.x));
 }
 
-double Vector::dot(const Vector& v) {
+double Vector::dot(const Vector& v) const{
 	return (x * v.x) + (y * v.y) + (z * v.z);
 }
 
-double Vector::magnitude() {
+double Vector::magnitude() const{
 	return sqrt(x*x + y*y + z*z);
 }
 

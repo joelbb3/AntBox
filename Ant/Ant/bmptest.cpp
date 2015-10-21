@@ -1,14 +1,13 @@
-#include <iostream>
+/*#include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <SFML/Graphics.hpp>
+
 
 using namespace std;
 
 int main() {
 	float input;
-	
-
 	ifstream infile;
 	infile.open("filteredframes1.txt");
 	if (!infile.is_open())
@@ -128,4 +127,4 @@ int main() {
 
 
 	return 1;
-}
+}*/

@@ -3,30 +3,30 @@
 #include <memory>
 #include <map>
 #include <string>
+#include <SFML/Graphics.hpp>
 #include "Geometry.h"
-#include "stdafx.h"
 
 class VisualObject {
+private:
+    static int visualObjectIDGenerator;
 public:
+    const int visualObjectID;
     Vector position;
-    static int IDGenerator;
-    const int ID;
-    
+    sf::Sprite sprite;
+    sf::Texture texture;
     VisualObject(std::string& texturePath, Vector initialPosition);
     VisualObject();
-    
-	Box getBoundingBox() const { return Box(Vector(0, 0, 0), 0, 0); };
+	//Box getBoundingBox() const { return Box(Vector(0, 0, 0), 0, 0); };
 };
 
 
 
 class Steppable : public VisualObject {
-private:
-    //sf::Clock stepClock;
+protected:
+    sf::Clock stepClock;
     
 public:
     Steppable(std::string texturePath, Vector initialPosition);
-    
     virtual void step(){};
 };
 

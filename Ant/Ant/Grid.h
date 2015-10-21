@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include <map>
 #include <vector>
 #include <memory>
@@ -15,7 +14,7 @@ public:
     std::shared_ptr<Vertex> pointThree;
     Vector normal;
     std::vector<std::vector<int>> neighbourList;
-	bool contains(Vector& xyVec) { return true; };
+    bool contains(Vector& xyVec);
     const int ID;
     TriangleFace(int ID, std::shared_ptr<Vertex> one, std::shared_ptr<Vertex> two, std::shared_ptr<Vertex> three, std::vector<std::vector<int>> neighbourList);
 };
@@ -58,10 +57,23 @@ class GridManager {
     static const int squaresPerRow;
     static const int squaresPerColumn;
     static std::vector<std::shared_ptr<TriangleFace>> faceArray;
-    static double sandboxWidth;
-    static double sandboxHeight;
-    static double getDepth(double x, double y);
 public:
+    static void debug(){
+        for(int i = 0; i < faceArray.size(); ++i){
+            if(i % (squaresPerRow * 2) == 0){
+                std::cout << "NEXT ROW:\n\n\n\n";
+            }
+            std::cout << "One";
+            faceArray[i]->pointOne->print();
+            std::cout << " Two";
+            faceArray[i]->pointTwo->print();
+            std::cout << " Three";
+            faceArray[i]->pointThree->print();
+            std::cout << "\n\n";
+        }
+    }
+    static int sandboxWidth;
+    static int sandboxHeight;
     static void makeZones();
     static int locatePoint(Vector& vec);
     static std::vector<double> getBarycentricCoordinates(int faceID, Vector& vec);

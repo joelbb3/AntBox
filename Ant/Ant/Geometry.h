@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include <iostream>
 
 struct Vector {
     double x;
@@ -16,9 +16,13 @@ struct Vector {
     friend Vector operator*(const double& x, const Vector& v1);
     //friend Vector operator+=(const Vector& v1, const Vector& v2);
     
-    Vector cross(const Vector& v);
-    double dot(const Vector& v);
-    double magnitude();
+    Vector cross(const Vector& v) const;
+    double dot(const Vector& v) const;
+    double magnitude() const;
+    
+    void print(){
+        std::cout << "(" << x << ", " << y << ", " << z << ")";
+    }
 };
 
 struct Plane {
@@ -48,3 +52,8 @@ struct Box {
 };
 
 Vector cross(const Vector& v1, const Vector& v2);
+Vector operator+(const Vector& v1, const Vector& v2);
+Vector operator-(const Vector& v1, const Vector& v2);
+Vector operator/(const Vector& v1, const double& x);
+Vector operator*(const Vector& v1, const double& x);
+Vector operator*(const double& x, const Vector& v1);
