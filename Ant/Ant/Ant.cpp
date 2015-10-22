@@ -71,6 +71,20 @@ void Ant::step(){
 	constrainToSurface(newVelocity);
 	setVelocity(newVelocity);
 	setPosition (position + (newVelocity * elapsedTime));
+	
+	// check sprite is still within boundary
+	if(position.x < 0)
+		position.x = 0;
+	if(position.y < 0)
+		position.y = 0;
+	int max_x = GridManager::sandboxWidth;
+	int max_y = GridManager::sandboxHeight;
+	if(position.x > max_x)
+		position.x = max_x;
+	if(position.y > max_y)
+		position.y = max_y;
+	
+	
     sprite.setPosition(position.x, position.y);
     flags.insert(AgentFlags::moved);
     //std::cout << "Step finished!\n";
@@ -97,6 +111,24 @@ Vector Ant::getClimbMountainForce(){
 }
 
 
-
+Vector Ant::getCentralTendencyForce(){
+	
+	int max_x = GridManager::sandboxWidth;
+	int max_y = GridManager::sandboxHeight;
+	
+	Vector center = (max_x/2, max_y/2, 0);
+	// I don't know how to find the corresponding z coordinate!
+	// so I left it as zero. :(
+	
+	float distance = sqrt(pow(position.x-center.x,2) + pow(position.y-center.y,2) + pow(position.z-center.z,2));
+	Vector force = center - position;
+	
+	force = force / force.magnitude();
+	// setting the magnitude to be inverse squared proportional to the distance from the edge
+	// (so will be pushed further in when closer to the edge)
+	// assumption: max_y is less than max_x
+	force = force * (1/(pow(distance - max_y/2, 2)));
+	return force;
+}
 
 
