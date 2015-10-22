@@ -29,34 +29,43 @@ void AgentManager::createAgent(AgentType type, Vector position) {
             agentList.push_back(newAgent);
             
             // Hash the agent ID to its associated face ID.
-            std::cout << "Storing agent location...\n";
+            std::cout << "Storing agent location...\n\n";
             agentFaceMap.insert(std::make_pair(newAgent->agentID, GridManager::locatePoint(newAgent->position)));
+            
     }
     std::cout << "Success!\n";
 }
 
 void AgentManager::stepAgents() {
+    std::cout << "Stepping agents...\n";
     for (auto it = agentList.begin(); it != agentList.end(); ) {
+        std::cout << "Now stepping agent #" << it->get()->agentID << " (Face#: " << agentFaceMap[it->get()->agentID] << ", raw position: "; it->get()->position.print(); std::cout << ")\n";
         // Check if the agent is dead. If yes, erase and move on.
         if(it->get()->flags.count(AgentFlags::kill)){
+            std::cout << "This agent is dead! Removing now...\n";
             it = agentList.erase(it);
             continue;
         }
         else{
+            std::cout << "Calling internal step...\n\n";
             // Let the agent make its step.
             it->get()->step();
             
-            // If tbe agent has moved, update its position in the face ID hashmap.
+            // If the agent has moved, update its position in the face ID hashmap.
             if(it->get()->flags.count(AgentFlags::moved)){
+                std::cout << "Agent has moved. Relocating...\n";
                 agentFaceMap[it->get()->agentID] = GridManager::locatePoint(it->get()->position);
+                std::cout << "Agent is now on face #: " << agentFaceMap[it->get()->agentID] << " with raw position: "; it->get()->position.print(); std::cout << "\n";
             }
             
             // Draw the agent.
+            std::cout << "Drawing the agent...\n";
             window->draw(it->get()->sprite);
         }
+        std::cout << "Stepping of agent # " << it->get()->agentID << " now complete!\n";
         ++it;
     }
-    
+    std::cout << "All stepping complete!\n";
     /*
     // Check for collisions.
     for (int i = agentList.begin()->first; i <= agentList.rbegin()->first; ++i) {
@@ -82,17 +91,25 @@ void AgentManager::stepAgents() {
 }
 
 void AgentManager::setTexture(AgentType type, std::string path){
+    std::cout << "Setting a new texture in the AgentManager...\n";
     if(textureMap.count(type)){
         textureMap[type] = path;
     }else{
         textureMap.insert(std::make_pair(type, path));
     }
+    std::cout << "Texture set!\n";
 }
 
 void AgentManager::setWindow(sf::RenderWindow& window){
+    std::cout << "Setting a new window in the AgentManager...\n";
     sf::RenderWindow* pnt = &window;
     AgentManager::window = std::shared_ptr<sf::RenderWindow>{pnt};
+    std::cout << "Window set!\n";
 }
+
+
+
+
 
 
 

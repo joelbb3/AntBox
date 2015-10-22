@@ -19,7 +19,8 @@
 // Configuration variables.
 const int GridManager::squaresPerRow = 50;
 const int GridManager::squaresPerColumn = 50;
-const int GridManager::maxNeighbourRadius = 0;
+const int GridManager::maxNeighbourRadius = 3;
+bool GridManager::debug = true;
 
 
 
@@ -44,7 +45,7 @@ int main(){
     std::cout << "Initialising grid manager...\n";
     GridManager::makeZones();
     std::cout << "Success!\n";
-    GridManager::debug();
+    //GridManager::test();
     
     // Set up the agent manager.
     
@@ -55,8 +56,11 @@ int main(){
     
     // Make an ant.
     
+    std::cout << "Making an ant...\n";
     Vector defaultPosition(SurfaceRenderer::getCurrentWidth() / 2, SurfaceRenderer::getCurrentHeight() / 2, SurfaceRenderer::getDepth(SurfaceRenderer::getCurrentWidth() / 2, SurfaceRenderer::getCurrentHeight() / 2));
+    //Vector defaultPosition = GridManager::getPoint(2060);
     AgentManager::createAgent(AgentType::ant, defaultPosition);
+    std::cout << "Ant made successfully!\n\n";
     
     // Run the main loop.
     

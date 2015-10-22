@@ -2,7 +2,9 @@
 #include "Grid.h"
 #include <memory>
 
-Agent::Agent(std::string& texturePath, Vector startingPosition) : Steppable(texturePath, startingPosition) {
+int Agent::agentIDGenerator = 0;
+
+Agent::Agent(std::string& texturePath, Vector startingPosition) : Steppable(texturePath, startingPosition), agentID(agentIDGenerator++) {
 }
 
 

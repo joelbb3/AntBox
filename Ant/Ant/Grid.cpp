@@ -40,10 +40,44 @@ bool PointInTriangle(Vector p, Vector a, Vector b, Vector c){
 }
 
 bool TriangleFace::contains(Vector& point){
-    return PointInTriangle(point, *pointOne, *pointTwo, *pointThree);
-    /*
-    double m = std::abs((pointThree->z - pointOne->z) / (pointThree->x - pointOne->x));
-    return (point.y > pointOne->y + (point.x * m) && point.y < pointTwo->y) || (point.y < pointOne->y + (point.x * m) && point.y > pointTwo->y);*/
+    if(GridManager::debug){
+        std::cout << "contains() called with vector: ";
+        point.print();
+        std::cout << "\nTriangle to be checked has points: "; pointOne->print(); std::cout << ";\n"; pointTwo->print(); std::cout << ";\n"; pointThree->print(); std::cout << "\n";
+    }
+    double m = std::abs((pointThree->y - pointOne->y) / (pointThree->x - pointOne->x));
+    if(GridManager::debug){
+        std::cout << "Gradient is: " << m << "\n";
+        std::cout << "The value of the diagonal line from point one to point three at x = " << point.x << " is: " << pointOne->y - ((point.x - pointOne->x) * m) << "\n";
+         if(point.y < pointOne->y - ((point.x - pointOne->x) * m)){
+             std::cout << "The point is above this line!\n";
+         }else{
+             std::cout << "The point is below this line!\n";
+         }
+        if(point.x < pointOne->x || point.x > pointThree->x){
+            std::cout << "The point's x value is out of bounds.\n";
+        }
+        if(point.y <= pointTwo->y){
+            std::cout << "The point is above the triangle's second vertex\n";
+        }else{
+            std::cout << "The point is below the triangle's second vertex\n";
+        }
+        if( (point.x >= pointOne->x)
+           && (point.x <= pointThree->x)
+           && ((point.y >= pointOne->y - ((point.x - pointOne->x) * m) && point.y <= pointTwo->y)
+               || (point.y <= pointOne->y - ((point.x - pointOne->x) * m) && point.y >= pointTwo->y))
+           ){
+            std::cout << "Returning true.\n";
+        }else{
+            std::cout << "Returning false.\n";
+        }
+        std::cout << "contains() exiting...\n\n";
+    }
+    return ( (point.x >= pointOne->x)
+            && (point.x <= pointThree->x)
+            && ((point.y >= pointOne->y - ((point.x - pointOne->x) * m) && point.y <= pointTwo->y)
+                || (point.y <= pointOne->y - ((point.x - pointOne->x) * m) && point.y >= pointTwo->y))
+            );
 }
 
 /* Vertex */
@@ -79,70 +113,189 @@ void Vertex::calculateNormal(){
 
 
 int GridManager::locatePoint(Vector& vec){              // Returns false if the point is not found.
+    if(debug){
+        std::cout << "locatePoint() called with vector: ";
+        vec.print();
+    }
     double squareWidth = SurfaceRenderer::getCurrentWidth() / squaresPerRow;
     double squareHeight = SurfaceRenderer::getCurrentHeight() / squaresPerColumn;
     int predictedRow = static_cast<int>(vec.x / squareWidth);
     int predictedColumn = static_cast<int>(vec.y / squareHeight);
-    //int predictedSquareID = (predictedColumn * squaresPerRow) + predictedRow;
+    if(debug){
+        std::cout << "\nSquare width: " << squareWidth << "\n";
+        std::cout << "Square height: " << squareHeight << "\n";
+        std::cout << "Predicted row is: " << predictedRow << "\n";
+        std::cout << "Predicted column is: " << predictedColumn << "\n";
+    }
     int predictedSquareID = (predictedRow * squaresPerColumn) + predictedColumn;
     int predictedTriangleID = predictedSquareID * 2;
-    std::cout << "Predicted triangle has vertices: ";
-    faceArray[predictedTriangleID]->pointOne->print();
-    faceArray[predictedTriangleID]->pointTwo->print();
-    faceArray[predictedTriangleID]->pointThree->print();
+    if(debug){
+        std::cout << "Predicted: " << predictedTriangleID << "\n";
+        std::cout << "(Predicted triangle has vertices: ";
+        faceArray[predictedTriangleID]->pointOne->print();
+        faceArray[predictedTriangleID]->pointTwo->print();
+        faceArray[predictedTriangleID]->pointThree->print();
+        std::cout << ")\n";
+    }
     if (faceArray[predictedTriangleID]->contains(vec)) {
+        if(debug){
+            std::cout << "Returning the predicted triangle!\n";
+            std::cout << "locatePoint() exiting...\n\n";
+        }
         return predictedTriangleID;
-    } else {
+    }
+    if(debug){
+        std::cout << "Testing other face in same square\n";
+    }
+    if(faceArray[predictedTriangleID+1]->contains(vec)) {
+        std::cout << "Found in other face on same square!\n";
+        std::cout << "locatePoint() exiting...\n\n";
+        return predictedTriangleID+1;
+    }
+    else{
         for (int i = 0; i < faceArray[predictedTriangleID]->neighbourList.size(); ++i) {
             for (auto x : faceArray[predictedTriangleID]->neighbourList[i]) {
+                if(debug){
+                    std::cout << "Testing face #" << x << "...\n\n";
+                }
                 if (faceArray[x]->contains(vec)) {
-                    return i;
+                    if(debug){
+                        std::cout << "Found!\n";
+                        std::cout << "locatePoint() exiting...\n";
+                    }
+                    return x;
+                }
+                if(debug){
+                    std::cout << "Point not contained in " << x << "\n";
                 }
             }
         }
     }
+    std::cout << "Error: Point not found!\n";
+    std::cout << "locatePoint() exiting...\n\n";
     return false;
 }
 
 
-std::vector<double> GridManager::getBarycentricCoordinates(int faceID, Vector& vec){
-    std::cout << "getBaryCentricCoordinates called with vector (" << vec.x << ", " << vec.y << ", " << vec.z << ")\n";
-    TriangleFace& triangle = *faceArray[faceID];
-    std::cout << "Triangle vertices are at: (" << triangle.pointOne->x << ", " << triangle.pointOne->y << ", " << triangle.pointOne->z << "), (" << triangle.pointTwo->x << ", " << triangle.pointTwo->y << ", " << triangle.pointTwo->z << "), (" << triangle.pointThree->x << ", " << triangle.pointThree->y << ", " << triangle.pointThree->z << ")\n";
-    Vector f1 = *triangle.pointOne - vec;
+std::vector<double> GridManager::getBarycentricCoordinates(int faceID, Vector& vect){
+    //std::cout << "getBaryCentricCoordinates called with vector (" << vect.x << ", " << vect.y << ", " << vect.z << ")\n";
+    Vector vec = Vector(vect.x, vect.y, 0);
+    std::shared_ptr<TriangleFace> triangle = faceArray[faceID];
+    Vector UA1 = Vector(triangle->pointOne->x, triangle->pointOne->y, 0);
+    Vector UA2 = Vector(triangle->pointTwo->x, triangle->pointTwo->y, 0);
+    Vector UA3 = Vector(triangle->pointThree->x, triangle->pointThree->y, 0);
+    //std::cout << "Triangle vertices are at:\n";
+    // triangle.pointOne->print(); std::cout << "\n";
+    // triangle.pointTwo->print(); std::cout << "\n";
+    // triangle.pointThree->print(); std::cout << "\n";
+    /*Vector f1 = *triangle.pointOne - vec;
     Vector f2 = *triangle.pointTwo - vec;
-    Vector f3 = *triangle.pointThree - vec;
-    std::cout << "Calculated f1 - " << f1.magnitude() << " f2 - " << f2.magnitude() << " f3 - " << f3.magnitude() << "\n";
-    double triArea = cross(*triangle.pointOne - *triangle.pointTwo, *triangle.pointOne - *triangle.pointThree).magnitude();
-    double a = cross(f2, f3).magnitude();
-    double b = cross(f1, f3).magnitude();
-    double c = cross(f1, f2).magnitude();
-    std::cout << "Returning barycentric coordinates: a - " << a << " b - " << b << " c - " << c << "\n";
+    Vector f3 = *triangle.pointThree - vec;*/
+    Vector f1 = vec - UA1;
+    Vector f2 = vec - UA2;
+    Vector f3 = vec - UA3;
+    /*
+     std::cout << "f1 is: "; f1.print(); std::cout << "\n";
+     std::cout << "f2 is: "; f2.print(); std::cout << "\n";
+     std::cout << "f3 is: "; f3.print(); std::cout << "\n";
+     std::cout << "UA1 is: "; UA1.print(); std::cout << "\n";
+     std::cout << "UA2 is: "; UA2.print(); std::cout << "\n";
+     std::cout << "UA3 is: "; UA3.print(); std::cout << "\n";
+     */
+    // std::cout << "Calculated f1 - " << f1.magnitude() << " f2 - " << f2.magnitude() << " f3 - " << f3.magnitude() << "\n";
+    //std::cout << "triare is crossing "; (*triangle.pointOne - *triangle.pointTwo).print(); std::cout << " and "; (*triangle.pointOne - *triangle.pointThree).print(); std::cout << "\n";
+    double triArea = cross(UA1 - UA2, UA1 - UA3).magnitude();
+    double a = cross(f2, f3).magnitude() / triArea;
+    double b = cross(f1, f3).magnitude() / triArea;
+    double c = cross(f1, f2).magnitude() / triArea;
+    /*
+    std::cout << "triArea is " << triArea << "\n";
+    std::cout << "area a is " << cross(f2, f3).magnitude() << "\n";
+    std::cout << "area b is " << cross(f1, f3).magnitude() << "\n";
+    std::cout << "area c is " << cross(f1, f2).magnitude() << "\n";
+     */
+    // std::cout << "Returning barycentric coordinates: a - " << a << " b - " << b << " c - " << c << "\n";
     return std::vector<double>{a, b, c};
 }
 
 double GridManager::absoluteInterpolateHeight(Vector& xyVec) {
+    if(debug){
+        std::cout << "absoluteInterpolateHeight() called with vector: ";
+        xyVec.print();
+        std::cout << "\nLocating point...\n";
+    }
     int faceID = locatePoint(xyVec);
+    if(debug){
+        std::cout << "Point located on face #: " << faceID << "\nInterpolating height...\n";
+        std::cout << "absoluteInterpolateHeight() exiting...\n\n";
+    }
     return interpolateHeight(faceID, xyVec);
 }
 
 double GridManager::interpolateHeight(int faceID, Vector& xyVec) {
-    std::cout << "Interpolating height...\n";
+    if(debug){
+        std::cout << "interpolateHeight() called with faceID: " << faceID << " and vector: ";
+        xyVec.print();
+        std::cout << "\n";
+    }
+    
     std::shared_ptr<TriangleFace> triangle = faceArray[faceID];
-    std::cout << "Vertex heights are: " << triangle->pointOne->z << " " << triangle->pointTwo->z << " " << triangle->pointThree->z << "\n";
+    
+    if(debug){
+        std::cout << "Face vrtex heights are: " << triangle->pointOne->z << ", " << triangle->pointTwo->z << ", " << triangle->pointThree->z << ".\n";
+        std::cout << "Getting barycentric coordinates...\n\n";
+    }
+    
     std::vector<double> baryCoord = getBarycentricCoordinates(faceID, xyVec);
     xyVec.z = (baryCoord[0] * triangle->pointOne->z) + (baryCoord[1] * triangle->pointTwo->z) + (baryCoord[2] * triangle->pointThree->z);
+    
+    if(debug){
+        std::cout << "Received barycentric coordinates:\na - " << baryCoord[0] << "\nb - " << baryCoord[1] << "\nc - " << baryCoord[2] << "\n";
+        std::cout << "Interpolate normal is: ";
+        ((baryCoord[0] * triangle->pointOne->normal) + (baryCoord[1] * triangle->pointTwo->normal) + (baryCoord[2] * triangle->pointThree->normal)).print();
+        std::cout << "\ninterpolateNormal() exiting...\n\n";
+    }
+    
+    if(xyVec.z > 1000){
+        std::cout << "Something probably went wrong.\n";
+        std::cout << "Vector was "; xyVec.print();
+        std::cout << "\n face ID was: " << faceID << "\n";
+        std::cout << "surrounding ertex heights are: " << triangle->pointOne->z << " " << triangle->pointTwo->z << " " << triangle->pointThree->z << "\n";
+    }
+    if(debug){
+        std::cout << "interpolateHeight() exiting...\n\n";
+    }
     return xyVec.z;
 }
 
 Vector GridManager::absoluteInterpolateNormal(Vector& vec){
+    if(debug){
+        std::cout << "absoluteInterpolateNormal() called with vector: ";
+        vec.print();
+        std::cout << "\nLocating point...\n";
+    }
     int faceID = locatePoint(vec);
+    std::cout << "Point located on face #: " << faceID << "\nInterpolating normal...\n";
+    std::cout << "absoluteInterpolateNormal() exiting...\n\n";
     return interpolateNormal(faceID, vec);
 }
 
 Vector GridManager::interpolateNormal(int faceID, Vector& vec){
+    if(debug){
+        std::cout << "interpolateNormal() called with faceID: " << faceID << " and vector: ";
+        vec.print();
+    }
     std::shared_ptr<TriangleFace> triangle = faceArray[faceID];
+    if(debug){
+        std::cout << "\nGetting barycentric coordinates...\n\n";
+    }
     std::vector<double> baryCoord = getBarycentricCoordinates(faceID, vec);
+    if(debug){
+        std::cout << "Received barycentric coordinates:\na - " << baryCoord[0] << "\nb - " << baryCoord[1] << "\nc - " << baryCoord[2] << "\n";
+        std::cout << "Interpolate normal is: ";
+        ((baryCoord[0] * triangle->pointOne->normal) + (baryCoord[1] * triangle->pointTwo->normal) + (baryCoord[2] * triangle->pointThree->normal)).print();
+        std::cout << "\ninterpolateNormal() exiting...\n\n";
+    }
     return (baryCoord[0] * triangle->pointOne->normal) + (baryCoord[1] * triangle->pointTwo->normal) + (baryCoord[2] * triangle->pointThree->normal);
 }
 
@@ -169,10 +322,10 @@ void GridManager::makeZones() {
     std::cerr << "Stage 1 passed.\n";
     
     // Fill the vertex array.
-    for (int i = 0; i < SurfaceRenderer::getCurrentWidth(); i += squareWidth) {
+    for (int i = 0; i <= squaresPerRow; ++i) {
         std::vector<std::shared_ptr<Vertex>> vertexColumn;
-        for (int j = 0; j < SurfaceRenderer::getCurrentHeight(); j += squareHeight) {
-            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(ID++, Vector(i, j, SurfaceRenderer::getDepth(i, j)))));
+        for (int j = 0; j <= squaresPerColumn; ++j) {
+            vertexColumn.push_back(std::shared_ptr<Vertex>(new Vertex(ID++, Vector(i * squareWidth, j * squareHeight, SurfaceRenderer::getDepth(i * squareWidth, j * squareHeight)))));
         }
         vertexArray.push_back(vertexColumn);
     }
@@ -185,8 +338,8 @@ void GridManager::makeZones() {
         std::vector<std::shared_ptr<SquareFace>> squareColumn;
         for (int j = 0; j < vertexArray[i].size() - 1; ++j){
             squareColumn.push_back(std::shared_ptr<SquareFace>(new SquareFace(ID, vertexArray[i][j], vertexArray[i+1][j], vertexArray[i][j+1], vertexArray[i+1][j+1])));
+            ID += 2;
         }
-		ID += 2;
         squareArray.push_back(squareColumn);
     }
     
@@ -209,6 +362,20 @@ void GridManager::makeZones() {
             }
         }
     }
+    
+    /*
+    for(int i = 0; i < squareArray[0].size(); ++i){
+        std::cout << "Square ID: " << squareArray[0][i]->ID << "\n";
+        squareArray[0][i]->topLeft->print();
+        squareArray[0][i]->topRight->print();
+        squareArray[0][i]->bottomLeft->print();
+        squareArray[0][i]->bottomRight->print();
+        std::cout << "\n\n";
+    }
+    
+    std::cout << "HEREHERHERHERHEHREH!\n\n\n\n\n\n\n\n\n";
+    std::cout << squareArray[1][0]->ID << "\n";
+     */
     
     std::cerr << "Stage 4 passed.\n";
     
@@ -241,9 +408,9 @@ void GridManager::makeZones() {
 				std::vector<int> neighboursAtRadiusK;
 				for (int l = 0; l <= k * 2; ++l) { // Note that k gives the boundary of the neighbourhood region; l traverses the region.
 					// Top row in the box at radius k.
-					if (indexInArray(squareArray.size(), squareArray[i].size(), i - k + l, j - k)) {
-						neighboursAtRadiusK.push_back(squareArray[i - k + l][j - k]->ID);
-						neighboursAtRadiusK.push_back(squareArray[i - k + l][j - k]->ID + 1);
+					if (indexInArray(squareArray.size(), squareArray[i].size(), i - (k-1) + l, j - k)) {
+						neighboursAtRadiusK.push_back(squareArray[i - (k-1) + l][j - k]->ID);
+						neighboursAtRadiusK.push_back(squareArray[i - (k-1) + l][j - k]->ID + 1);
 					}
 					// Left column in the box at radius k.
 					if (indexInArray(squareArray.size(), squareArray[i].size(), i - k, j - k + l)) {
@@ -251,9 +418,9 @@ void GridManager::makeZones() {
 						neighboursAtRadiusK.push_back(squareArray[i - k][j - k + l]->ID + 1);
 					}
 					// Bottom row in the box at radius k.
-					if (indexInArray(squareArray.size(), squareArray[i].size(), i + k - l, j + k)) {
-						neighboursAtRadiusK.push_back(squareArray[i + k - l][j + k]->ID);
-						neighboursAtRadiusK.push_back(squareArray[i + k - l][j + k]->ID + 1);
+					if (indexInArray(squareArray.size(), squareArray[i].size(), i + (k-1) - l, j + k)) {
+						neighboursAtRadiusK.push_back(squareArray[i + (k-1) - l][j + k]->ID);
+						neighboursAtRadiusK.push_back(squareArray[i + (k-1) - l][j + k]->ID + 1);
 					}
 					// Right column in the box at radius k.
 					if (indexInArray(squareArray.size(), squareArray[i].size(), i + k, j + k - l)) {
@@ -262,6 +429,11 @@ void GridManager::makeZones() {
 					}
 				}
 				neighboursList.push_back(neighboursAtRadiusK);
+                /*std::cout << "At distance: " << k << " square number: " << squareArray[i][j]->ID << " has neighbours:\n";
+                for(auto& x : neighboursAtRadiusK){
+                    std::cout << x << ", ";
+                }
+                std::cout << "\n\n";*/
 			}
 			squareArray[i][j]->neighbourList = neighboursList;
 		}
@@ -277,6 +449,9 @@ void GridManager::makeZones() {
 				square->top->neighbourList.push_back(x);
 				square->bottom->neighbourList.push_back(x);
 			}
+            // Since neighbour lists were constructed in square arrays, triangles within the same square must be specifically associated.
+            square->top->neighbourList[0].push_back(square->bottom->ID);
+            square->bottom->neighbourList[0].push_back(square->top->ID);
 			// Finally, add to the face array.
 			faceArray.push_back(std::shared_ptr<TriangleFace>(square->top));
 			faceArray.push_back(std::shared_ptr<TriangleFace>(square->bottom));
@@ -289,7 +464,7 @@ void GridManager::makeZones() {
         std::cout << x->pointOne->z << " " << x->pointTwo->z << " " << x->pointThree->z << "\n";
     }*/
     Vector test(60,60,60);
-    std::cout << "TEST: " << interpolateHeight(locatePoint(test), test);
+    //std::cout << "TEST: " << interpolateHeight(locatePoint(test), test);
 };
 
 

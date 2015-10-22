@@ -101,7 +101,7 @@ void SurfaceRenderer::renderFrame(){
     frameTexture.update(RGBA);
     frameTexture.setSmooth(true);
     frameSprite.setTexture(frameTexture);
-    frameSprite.setScale(3, 3);
+    //frameSprite.setScale(3, 3);
 }
 
 void SurfaceRenderer::drawFrame(sf::RenderWindow& window){

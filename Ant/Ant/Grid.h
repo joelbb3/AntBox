@@ -1,7 +1,10 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <fstream>
 #include <memory>
+#include <cmath>
+#include "SurfaceRenderer.h"
 #include "Geometry.h"
 
 class Vertex;
@@ -53,22 +56,20 @@ public:
 
 
 class GridManager {
+private:
     static const int maxNeighbourRadius; // Critical for performance.
     static const int squaresPerRow;
     static const int squaresPerColumn;
     static std::vector<std::shared_ptr<TriangleFace>> faceArray;
 public:
-    static void debug(){
-        for(int i = 0; i < faceArray.size(); ++i){
-            if(i % (squaresPerRow * 2) == 0){
-                std::cout << "NEXT ROW:\n\n\n\n";
-            }
-            std::cout << "One";
-            faceArray[i]->pointOne->print();
-            std::cout << " Two";
-            faceArray[i]->pointTwo->print();
-            std::cout << " Three";
-            faceArray[i]->pointThree->print();
+    static bool debug;
+    static void test(){
+        for(auto face : faceArray){
+            std::cout << "Vertex one: "; face->pointOne->print(); std::cout << "\n";
+            std::cout << "Vertex two: "; face->pointTwo->print(); std::cout << "\n";
+            std::cout << "Vertex three: "; face->pointThree->print(); std::cout << "\n";
+            std::cout << "Face normal: ";
+            face->normal.print();
             std::cout << "\n\n";
         }
     }

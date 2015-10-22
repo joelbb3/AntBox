@@ -20,7 +20,7 @@ Vector Ant::constrainToSurface (const Vector velocity)
 	int x = position.x + velocity.x;
 	int y = position.y + velocity.y;
 	//find the corresponding zs
-    int z = GridManager::interpolateHeight(faceID, position);
+    int z = GridManager::interpolateHeight(AgentManager::getFace(agentID), position);
 	//find the vector in the direction of movement constained to surface
 	Vector direction = Vector(x - position.x, y - position.y, z - position.z);
     direction = direction / direction.magnitude();
@@ -31,7 +31,7 @@ Vector Ant::constrainToSurface (const Vector velocity)
 
 Vector Ant::getSteepestDown()
 {
-    Vector normal = GridManager::interpolateNormal(faceID, position);
+    Vector normal = GridManager::interpolateNormal(AgentManager::getFace(agentID), position);
 	if(normal.x == 0 && normal.x == 0) // tangent plane is a horizontal plane
 	{
 		return Vector(0,0,0);
@@ -48,11 +48,7 @@ Vector Ant::getSteepestDown()
 
 
 void Ant::step(){
-    position = Vector(position.x + 1, position.y, position.z);
-    //std::cout << GridManager::interpolateHeight(AgentManager::getFace(agentID), position) << "\n";
-    sprite.setPosition(position.x, position.y);
-    flags.insert(AgentFlags::moved);
-    /*
+    std::cout << "Ant #" << agentID << " making internal step.\n";
 	Vector force = getSteeringForce();
 	// f / m = a
 	Vector newAcceleration = (force / _mass);
@@ -75,13 +71,15 @@ void Ant::step(){
 	constrainToSurface(newVelocity);
 	setVelocity(newVelocity);
 	setPosition (position + (newVelocity * elapsedTime));
-    */
+    sprite.setPosition(position.x, position.y);
+    flags.insert(AgentFlags::moved);
+    //std::cout << "Step finished!\n";
 }
 
 
 Vector Ant::getClimbMountainForce(){
 
-    Vector normal = GridManager::interpolateNormal(faceID, position);
+    Vector normal = GridManager::interpolateNormal(AgentManager::getFace(agentID), position);
 	if(normal.x==0 && normal.x==0) // tangent plane is a horizontal plane
 	{
 		return Vector(0,0,0);

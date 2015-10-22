@@ -22,6 +22,8 @@ enum AgentFlags{
 };
 
 class Agent : public Steppable {
+private:
+    static int agentIDGenerator;
     friend class AgentManager;
 	//friend class AffordanceFactory;
 protected:
