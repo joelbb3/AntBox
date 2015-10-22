@@ -26,7 +26,10 @@ private:
 			return getClimbMountainForce();
 			break;
 		default:
-			return getClimbMountainForce();
+			Vector CMForce = getClimbMountainForce();
+			Vector CTForce = getCentralTendencyForce();
+			Vector NetForce = CMForce + CTForce;
+			return NetForce
 		}
 	}
 
@@ -36,6 +39,7 @@ public:
 	~Ant(){};
 	void step();
 	Vector getClimbMountainForce();
+	Vector getCentralTendencyForce();
 
 	double getMaxForce() const {
 		return _maxForce;
