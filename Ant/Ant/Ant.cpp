@@ -54,10 +54,13 @@ void Ant::step(){
 	Vector newAcceleration = (force / _mass);
 	// get velocity
 	Vector newVelocity = _velocity;
-
+    std::cout << "velocity: "; newVelocity.print(); std::cout << "\n";
+    std::cout << "acceleration: "; newAcceleration.print(); std::cout << "\n";
 	// change the velocity by the acceleration * delta of time
-    int elapsedTime = stepClock.getElapsedTime().asMilliseconds();
+    int elapsedTime = stepClock.restart().asSeconds();
+    std::cout << "elapsed: " << elapsedTime << "\n";
 	newVelocity = newVelocity + (newAcceleration * elapsedTime);
+    std::cout << "velocity: "; newVelocity.print(); std::cout << "\n";
 	// set velocity and speed
 	setSpeed(newVelocity.magnitude());
 	if(_speed > _maxSpeed)
@@ -80,7 +83,7 @@ void Ant::step(){
 Vector Ant::getClimbMountainForce(){
 
     Vector normal = GridManager::interpolateNormal(AgentManager::getFace(agentID), position);
-	if(normal.x==0 && normal.x==0) // tangent plane is a horizontal plane
+	if(normal.x==0 && normal.y==0) // tangent plane is a horizontal plane
 	{
 		return Vector(0,0,0);
 	}

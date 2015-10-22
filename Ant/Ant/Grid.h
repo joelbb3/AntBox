@@ -24,10 +24,12 @@ public:
 
 
 class Vertex : public Vector{
-    int ID;
+    friend class GridManager;
+    static int vertexIDGenerator;
     std::vector<std::weak_ptr<TriangleFace>> associatedFaces;
 public:
-    Vertex(int ID, Vector position);
+    const int vertexID;
+    Vertex(Vector position);
     Vector normal;
     void associate(std::shared_ptr<TriangleFace> face);
     void calculateNormal();
@@ -64,14 +66,52 @@ private:
 public:
     static bool debug;
     static void test(){
-        for(auto face : faceArray){
+        /*  Print all triangle vertices and normals.
+            for(auto face : faceArray){
             std::cout << "Vertex one: "; face->pointOne->print(); std::cout << "\n";
             std::cout << "Vertex two: "; face->pointTwo->print(); std::cout << "\n";
             std::cout << "Vertex three: "; face->pointThree->print(); std::cout << "\n";
             std::cout << "Face normal: ";
             face->normal.print();
             std::cout << "\n\n";
+        }*/
+        /* Print all vertex normals.*/
+        for(auto face : faceArray){
+            /*std::cout << "Vertex one (#" << face->pointOne->vertexID << ") is associated with:\n";
+            for(auto associatedFace : face->pointOne->associatedFaces){
+                std::cout << "Face #" << associatedFace.lock()->ID << ", with normal: "; associatedFace.lock()->normal.print(); std::cout << "\n";
+            }*/
+            std::cout << "Therefore vertex one has normal: "; face->pointOne->normal.print(); std::cout << "\n";
+            /*std::cout << "Vertex two (#" << face->pointTwo->vertexID << ") is associated with:\n";
+            for(auto associatedFace : face->pointTwo->associatedFaces){
+                std::cout << "Face #" << associatedFace.lock()->ID << ", with normal: "; associatedFace.lock()->normal.print(); std::cout << "\n";
+            }
+            */std::cout << "Therefore vertex two has normal: "; face->pointTwo->normal.print(); std::cout << "\n";
+            /*std::cout << "Vertex three (#" << face->pointThree->vertexID << ") is associated with:\n";
+            for(auto associatedFace : face->pointThree->associatedFaces){
+                std::cout << "Face #" << associatedFace.lock()->ID << ", with normal: "; associatedFace.lock()->normal.print(); std::cout << "\n";
+            }*/
+            std::cout << "Therefore vertex three has normal: "; face->pointThree->normal.print(); std::cout << "\n";
         }
+        /* Print all associated faces for each vertex.
+        for(auto face : faceArray){
+            std::cout << "Face #" << face->ID << " has pointOne #" << face->pointOne->vertexID << "\n";
+            std::cout << "Vertex #" << face->pointOne->vertexID << " is associated with:\n";
+            for(auto assocFace : face->pointOne->associatedFaces){
+                std::cout << "Face #" << assocFace.lock()->ID << "\n";
+            }
+            std::cout << "Face #" << face->ID << " has pointTwo #" << face->pointTwo->vertexID << "\n";
+            std::cout << "Vertex #" << face->pointTwo->vertexID << " is associated with:\n";
+            for(auto assocFace : face->pointTwo->associatedFaces){
+                std::cout << "Face #" << assocFace.lock()->ID << "\n";
+            }
+            std::cout << "Face #" << face->ID << " has pointThree #" << face->pointThree->vertexID << "\n";
+            std::cout << "Vertex #" << face->pointThree->vertexID << " is associated with:\n";
+            for(auto assocFace : face->pointThree->associatedFaces){
+                std::cout << "Face #" << assocFace.lock()->ID << "\n";
+            }
+        }*/
+         
     }
     static int sandboxWidth;
     static int sandboxHeight;

@@ -19,7 +19,7 @@ VisualObject::VisualObject() : visualObjectID(visualObjectIDGenerator++){
 /* Steppable */
 
 Steppable::Steppable(std::string texturePath, Vector initialPosition) : VisualObject(texturePath, initialPosition) {
-    //stepClock.restart();
+    stepClock.restart();
 }
 
 
