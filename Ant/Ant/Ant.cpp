@@ -36,10 +36,16 @@ Vector Ant::getSteepestDown()
 	{
 		return Vector(0,0,0);
 	}
-
-	float a = -(normal.x/normal.y);
-	Vector tangent = Vector(1,a,0);
-    Vector steepest = normal.cross(tangent) / normal.cross(tangent).magnitude();
+	if(normal.y == 0)
+	{
+		Vector tangent = Vector(0,1,0)
+	}
+	else
+	{
+		float a = -(normal.x/normal.y);
+		Vector tangent = Vector(1,a,0);
+	}
+	Vector steepest = normal.cross(tangent) / normal.cross(tangent).magnitude();
 	// z component must be between -1 and 1
 	if(steepest.z > 0)
 		steepest = steepest * -1;
@@ -87,10 +93,16 @@ Vector Ant::getClimbMountainForce(){
 	{
 		return Vector(0,0,0);
 	}
-
-	float a = -(normal.x/normal.y);
-	Vector tangent = Vector(1,a,0);
-    Vector steepest = normal.cross(tangent) / normal.cross(tangent).magnitude();
+	if(normal.y == 0)
+	{
+		Vector tangent = Vector(0,1,0)
+	}
+	else
+	{
+		float a = -(normal.x/normal.y);
+		Vector tangent = Vector(1,a,0);
+	}
+	Vector steepest = normal.cross(tangent) / normal.cross(tangent).magnitude();
 	// z component must be between -1 and 1
 	if(steepest.z < 0)
 		steepest = steepest * -1;
